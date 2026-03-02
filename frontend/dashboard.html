@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI Hairstyle Studio</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../css/dashboard.css">
+</head>
+<body>
+
+<!-- Header -->
+<header>
+  <h1>✦ Hairstyle AI</h1>
+  <nav>
+    <span class="nav-item active">Studio</span>
+    <span class="nav-item" onclick="window.location.href='hairstyles.html'" style="cursor:pointer">Hairstyles</span>
+    <span class="nav-item">History</span>
+    <button class="logout-btn" onclick="window.location.href='login.html'">Logout</button>
+  </nav>
+</header>
+
+<div class="main">
+  <div class="grid">
+
+    <!-- ===== AR BLOCK ===== -->
+    <div class="camera-box">
+
+      <video id="video" autoplay playsinline></video>
+      <canvas id="canvas"></canvas>
+
+      <!-- LOADER -->
+      <div class="ar-loader" id="arLoader">
+        <span id="count">3</span>
+      </div>
+
+      <!-- START BUTTON -->
+      <button class="floating-start" onclick="startAR()">
+        ▶ Start AR
+      </button>
+
+      <!-- EXIT BUTTON -->
+      <button class="exit-ar" onclick="exitAR()">✕</button>
+
+      <!-- Style Picker -->
+      <div class="style-picker">
+        <button onclick="changeHair('style1.png')" class="style-btn active">Style 1</button>
+        <button onclick="changeHair('style2.png')" class="style-btn">Style 2</button>
+        <button onclick="changeHair('style3.png')" class="style-btn">Style 3</button>
+        <button onclick="changeHair('style4.png')" class="style-btn">Style 4</button>
+      </div>
+
+    </div>
+
+    <!-- ===== SIDE PANEL ===== -->
+    <div class="side-panel">
+
+      <!-- Upload Card -->
+      <div class="card">
+        <div class="card-header">
+          <div class="card-icon">🔬</div>
+          <div>
+            <div class="card-title">Hair Analysis</div>
+            <div class="card-subtitle">Upload a photo to analyze your hair</div>
+          </div>
+        </div>
+
+        <label class="upload-box" for="upload">
+          <input type="file" id="upload" accept="image/*">
+          <img id="imagePreview" style="display:none; width:100%; border-radius:10px; margin-bottom:12px; max-height:160px; object-fit:cover;">
+          <div class="upload-icon">📷</div>
+          <span class="upload-text">Drag & Drop or Click to Upload</span>
+          <small class="upload-hint">Supports JPG, PNG, WEBP</small>
+        </label>
+
+        <button class="analyze-btn" onclick="analyzeHair()">
+          Analyze Hair →
+        </button>
+
+        <p id="result" class="result-text">Upload an image to analyze your hair condition.</p>
+      </div>
+
+      <!-- Hairstyles Explorer Card -->
+      <div class="card" style="cursor:pointer; transition: all 0.2s;"
+           onclick="window.location.href='hairstyles.html'"
+           onmouseover="this.style.borderColor='#c8a96e'"
+           onmouseout="this.style.borderColor=''">
+        <div class="card-header">
+          <div class="card-icon">✂️</div>
+          <div>
+            <div class="card-title">Hairstyle Explorer</div>
+            <div class="card-subtitle">Browse styles, AR try-on & recommendations</div>
+          </div>
+        </div>
+        <div class="steps">
+          <div class="step"><span class="step-num">🖼</span>Browse 20+ hairstyle gallery</div>
+          <div class="step"><span class="step-num">✨</span>Try styles on with AR camera</div>
+          <div class="step"><span class="step-num">💡</span>Get recommendations for your type</div>
+        </div>
+        <button class="analyze-btn" style="margin-top:12px; background: linear-gradient(135deg, #7c6fcd, #c8a96e);">
+          Explore Styles →
+        </button>
+      </div>
+
+      <!-- Info Card -->
+      <div class="card info-card">
+        <div class="card-header">
+          <div class="card-icon">💡</div>
+          <div>
+            <div class="card-title">How It Works</div>
+          </div>
+        </div>
+        <div class="steps">
+          <div class="step"><span class="step-num">1</span>Upload a clear photo of your hair</div>
+          <div class="step"><span class="step-num">2</span>AI analyzes your hair condition</div>
+          <div class="step"><span class="step-num">3</span>Get personalized tips & products</div>
+          <div class="step"><span class="step-num">4</span>Download your full report as PDF</div>
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh/face_mesh.js"></script>
+<script src="../js/script.js"></script>
+<script src="../js/dashboard.js"></script>
+</body>
+</html>

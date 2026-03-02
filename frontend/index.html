@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>AI Hairstyle Studio</title>
+  <link rel="stylesheet" href="../css/style.css">
+</head>
+<script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh/face_mesh.js"></script>
+<body>
+
+<div class="app">
+
+  <header>
+    <h1>AI Hairstyle Studio</h1>
+  </header>
+
+  <section class="main">
+
+    <div class="camera-box">
+  <video id="video" autoplay playsinline></video>
+  <canvas id="canvas"></canvas>
+        </div>
+
+    <div class="control-box">
+      <h3>Controls</h3>
+      <button onclick="startCamera()">Start Camera</button>
+      <button onclick="captureImage()">Capture</button>
+<button onclick="saveStyle()">Save Style</button>
+    </div>
+
+  </section>
+
+  <div class="styles">
+  <button onclick="changeHair('style1.png')">Style 1</button>
+  <button onclick="changeHair('style2.png')">Style 2</button>
+    <button onclick="changeHair('style3.png')">Style 3 </button>
+  <button onclick="changeHair('style4.png')">Style 4</button>
+
+</div>
+
+</div>
+
+<script src="../js/script.js"></script>
+</body>
+</html>
+

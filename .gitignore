@@ -1,0 +1,8 @@
+datasets/
+model/
+hairstyles/
+.DS_Store
+__pycache__/
+*.pyc
+*.h5
+nano check_images.py

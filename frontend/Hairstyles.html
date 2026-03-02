@@ -1,0 +1,1224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Hairstyle Explorer</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0a0a0f;
+      --card: #13131a;
+      --border: #2a2a3a;
+      --accent: #c8a96e;
+      --accent2: #7c6fcd;
+      --text: #e8e8f0;
+      --muted: #888899;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'DM Sans', sans-serif;
+      min-height: 100vh;
+    }
+
+    /* ===== HEADER ===== */
+    header {
+      padding: 20px 40px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: rgba(19,19,26,0.95);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      backdrop-filter: blur(10px);
+    }
+
+    header h1 {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.4rem;
+      color: var(--accent);
+      letter-spacing: 1px;
+    }
+
+    .btn {
+      padding: 10px 22px;
+      border-radius: 8px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.85rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s;
+      border: none;
+    }
+    .btn-outline {
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--text);
+    }
+    .btn-outline:hover { border-color: var(--accent); color: var(--accent); }
+
+    /* ===== HERO ===== */
+    .hero {
+      text-align: center;
+      padding: 60px 20px 40px;
+      position: relative;
+    }
+    .hero::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 50%;
+      transform: translateX(-50%);
+      width: 600px;
+      height: 300px;
+      background: radial-gradient(ellipse, rgba(200,169,110,0.08) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .hero h2 {
+      font-family: 'Playfair Display', serif;
+      font-size: 2.8rem;
+      color: var(--text);
+      margin-bottom: 12px;
+    }
+    .hero h2 span { color: var(--accent); font-style: italic; }
+    .hero p { color: var(--muted); font-size: 1rem; max-width: 500px; margin: 0 auto; }
+
+    /* ===== HAIR TYPE FILTER ===== */
+    .filter-section {
+      padding: 20px 40px;
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      justify-content: center;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .filter-btn {
+      padding: 8px 18px;
+      border-radius: 50px;
+      font-size: 0.82rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s;
+      border: 1px solid var(--border);
+      background: transparent;
+      color: var(--muted);
+      font-family: 'DM Sans', sans-serif;
+    }
+    .filter-btn:hover, .filter-btn.active {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: #0a0a0f;
+    }
+
+    /* ===== TABS ===== */
+    .tabs {
+      display: flex;
+      gap: 0;
+      padding: 0 40px;
+      border-bottom: 1px solid var(--border);
+      margin-top: 10px;
+    }
+    .tab {
+      padding: 16px 28px;
+      font-size: 0.9rem;
+      font-weight: 500;
+      color: var(--muted);
+      cursor: pointer;
+      border-bottom: 2px solid transparent;
+      transition: all 0.2s;
+      background: none;
+      border-top: none;
+      border-left: none;
+      border-right: none;
+      font-family: 'DM Sans', sans-serif;
+    }
+    .tab:hover { color: var(--text); }
+    .tab.active { color: var(--accent); border-bottom-color: var(--accent); }
+
+    /* ===== MAIN CONTENT ===== */
+    .container { max-width: 1100px; margin: 0 auto; padding: 40px 20px 80px; }
+
+    /* ===== GALLERY GRID ===== */
+    .gallery-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 20px;
+    }
+
+    .style-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      overflow: hidden;
+      cursor: pointer;
+      transition: all 0.3s;
+      position: relative;
+    }
+    .style-card:hover {
+      transform: translateY(-4px);
+      border-color: var(--accent);
+      box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+    }
+
+    .card-image {
+      width: 100%;
+      height: 220px;
+      object-fit: cover;
+      display: block;
+      background: #1a1a25;
+    }
+
+    /* Placeholder image with emoji */
+    .card-image-placeholder {
+      width: 100%;
+      height: 220px;
+      background: linear-gradient(135deg, #1a1a2e, #16213e);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 5rem;
+      position: relative;
+      overflow: hidden;
+    }
+    .card-image-placeholder::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, transparent 60%, rgba(200,169,110,0.1));
+    }
+
+    .card-body { padding: 16px; }
+
+    .card-tags {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+      margin-bottom: 10px;
+    }
+    .tag {
+      padding: 3px 10px;
+      border-radius: 50px;
+      font-size: 0.72rem;
+      font-weight: 500;
+      letter-spacing: 0.5px;
+    }
+    .tag-type { background: rgba(200,169,110,0.15); color: var(--accent); }
+    .tag-difficulty-easy { background: rgba(74,206,168,0.15); color: #4acea8; }
+    .tag-difficulty-medium { background: rgba(232,131,74,0.15); color: #e8834a; }
+    .tag-difficulty-hard { background: rgba(232,90,90,0.15); color: #e85a5a; }
+
+    .card-name {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.1rem;
+      color: var(--text);
+      margin-bottom: 6px;
+    }
+    .card-desc { font-size: 0.82rem; color: var(--muted); line-height: 1.5; }
+
+    .card-footer {
+      padding: 12px 16px;
+      border-top: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .card-footer-text { font-size: 0.78rem; color: var(--muted); }
+
+    .try-btn {
+      padding: 7px 16px;
+      background: var(--accent);
+      color: #0a0a0f;
+      border: none;
+      border-radius: 6px;
+      font-size: 0.78rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+      font-family: 'DM Sans', sans-serif;
+    }
+    .try-btn:hover { background: #d4b87a; transform: scale(1.03); }
+
+    /* ===== AR SECTION ===== */
+    .ar-section { display: none; }
+    .ar-section.visible { display: block; }
+
+    .ar-container {
+      display: grid;
+      grid-template-columns: 1fr 340px;
+      gap: 24px;
+      align-items: start;
+    }
+
+    .ar-camera-box {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      overflow: hidden;
+      position: relative;
+      aspect-ratio: 4/3;
+    }
+
+    #arVideo {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      transform: scaleX(-1);
+    }
+
+    .ar-overlay {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      gap: 16px;
+      background: rgba(10,10,15,0.7);
+    }
+    .ar-overlay.hidden { display: none; }
+
+    .ar-overlay p { color: var(--muted); font-size: 0.9rem; text-align: center; }
+
+    .start-camera-btn {
+      padding: 14px 32px;
+      background: var(--accent);
+      color: #0a0a0f;
+      border: none;
+      border-radius: 50px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.95rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+    .start-camera-btn:hover {
+      background: #d4b87a;
+      transform: translateY(-2px);
+      box-shadow: 0 10px 30px rgba(200,169,110,0.3);
+    }
+
+    /* AR canvas overlay */
+    #arCanvas {
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+    }
+
+    .ar-selected-style {
+      position: absolute;
+      bottom: 16px;
+      left: 16px;
+      background: rgba(10,10,15,0.85);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 10px 14px;
+      font-size: 0.82rem;
+      color: var(--accent);
+      backdrop-filter: blur(10px);
+    }
+
+    /* AR Style Picker */
+    .ar-style-picker {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 20px;
+    }
+
+    .ar-picker-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.1rem;
+      color: var(--accent);
+      margin-bottom: 16px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .ar-style-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      max-height: 480px;
+      overflow-y: auto;
+    }
+    .ar-style-list::-webkit-scrollbar { width: 4px; }
+    .ar-style-list::-webkit-scrollbar-track { background: transparent; }
+    .ar-style-list::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+
+    .ar-style-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px;
+      border-radius: 10px;
+      border: 1px solid transparent;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .ar-style-item:hover { background: rgba(255,255,255,0.04); border-color: var(--border); }
+    .ar-style-item.selected { background: rgba(200,169,110,0.1); border-color: var(--accent); }
+
+    .ar-style-emoji { font-size: 2rem; width: 48px; text-align: center; }
+    .ar-style-name { font-size: 0.88rem; font-weight: 500; color: var(--text); }
+    .ar-style-type { font-size: 0.75rem; color: var(--muted); margin-top: 2px; }
+
+    /* AR note */
+    .ar-note {
+      background: rgba(124,111,205,0.1);
+      border: 1px solid rgba(124,111,205,0.3);
+      border-radius: 12px;
+      padding: 14px;
+      margin-top: 16px;
+      font-size: 0.82rem;
+      color: var(--muted);
+      line-height: 1.5;
+    }
+
+    /* ===== RECOMMENDATIONS ===== */
+    .rec-section { display: none; }
+    .rec-section.visible { display: block; }
+
+    .rec-selector {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 28px;
+      margin-bottom: 28px;
+      text-align: center;
+    }
+    .rec-selector h3 {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.3rem;
+      color: var(--accent);
+      margin-bottom: 8px;
+    }
+    .rec-selector p { color: var(--muted); font-size: 0.88rem; margin-bottom: 20px; }
+
+    .hair-type-btns {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      justify-content: center;
+    }
+    .hair-type-btn {
+      padding: 10px 20px;
+      border-radius: 50px;
+      font-size: 0.85rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s;
+      border: 1px solid var(--border);
+      background: transparent;
+      color: var(--muted);
+      font-family: 'DM Sans', sans-serif;
+    }
+    .hair-type-btn:hover, .hair-type-btn.selected {
+      border-color: var(--accent);
+      color: var(--accent);
+      background: rgba(200,169,110,0.1);
+    }
+
+    .rec-results { display: none; }
+    .rec-results.visible { display: block; }
+
+    .rec-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+    .rec-header h3 {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.4rem;
+      color: var(--text);
+    }
+    .rec-badge {
+      padding: 4px 12px;
+      border-radius: 50px;
+      font-size: 0.78rem;
+      font-weight: 600;
+      background: rgba(200,169,110,0.15);
+      color: var(--accent);
+    }
+
+    /* ===== EMPTY STATE ===== */
+    .empty-state {
+      text-align: center;
+      padding: 60px 20px;
+      color: var(--muted);
+    }
+    .empty-state .icon { font-size: 3rem; margin-bottom: 16px; }
+    .empty-state p { font-size: 0.9rem; }
+
+    /* ===== MODAL ===== */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.8);
+      z-index: 1000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s;
+      backdrop-filter: blur(4px);
+    }
+    .modal-overlay.open { opacity: 1; pointer-events: all; }
+
+    .modal {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      max-width: 520px;
+      width: 100%;
+      max-height: 80vh;
+      overflow-y: auto;
+      transform: translateY(20px);
+      transition: transform 0.3s;
+    }
+    .modal-overlay.open .modal { transform: translateY(0); }
+
+    .modal-image {
+      width: 100%;
+      height: 240px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 6rem;
+      background: linear-gradient(135deg, #1a1a2e, #16213e);
+    }
+    .modal-body { padding: 24px; }
+    .modal-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.6rem;
+      margin-bottom: 8px;
+    }
+    .modal-desc { color: var(--muted); font-size: 0.9rem; line-height: 1.6; margin-bottom: 20px; }
+
+    .modal-section-title {
+      font-size: 0.78rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--muted);
+      margin-bottom: 10px;
+    }
+    .modal-steps { display: flex; flex-direction: column; gap: 10px; margin-bottom: 20px; }
+    .modal-step {
+      display: flex;
+      gap: 12px;
+      align-items: flex-start;
+      font-size: 0.88rem;
+      color: #ccccd8;
+      line-height: 1.5;
+    }
+    .step-num {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background: rgba(200,169,110,0.2);
+      color: var(--accent);
+      font-size: 0.75rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+
+    .modal-close {
+      position: absolute;
+      top: 16px;
+      right: 16px;
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.1);
+      border: none;
+      color: var(--text);
+      font-size: 1.1rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .modal-footer {
+      padding: 16px 24px;
+      border-top: 1px solid var(--border);
+      display: flex;
+      gap: 12px;
+    }
+    .modal-try-btn {
+      flex: 1;
+      padding: 12px;
+      background: var(--accent);
+      color: #0a0a0f;
+      border: none;
+      border-radius: 10px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.9rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .modal-try-btn:hover { background: #d4b87a; }
+
+    @media (max-width: 768px) {
+      .ar-container { grid-template-columns: 1fr; }
+      header { padding: 16px 20px; }
+      .filter-section { padding: 16px 20px; }
+      .tabs { padding: 0 20px; }
+      .hero h2 { font-size: 2rem; }
+    }
+
+    /* Animations */
+    .fade-up {
+      animation: fadeUp 0.5s ease forwards;
+      opacity: 0;
+    }
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(16px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>✦ Hairstyle Explorer</h1>
+  <button class="btn btn-outline" onclick="window.location.href='dashboard.html'">← Back</button>
+</header>
+
+<div class="hero">
+  <h2>Find Your <span>Perfect Style</span></h2>
+  <p>Browse hairstyles, get personalized recommendations, and try them on with AR</p>
+</div>
+
+<!-- Filter Bar -->
+<div class="filter-section">
+  <button class="filter-btn active" onclick="filterCards('all', this)">All Styles</button>
+  <button class="filter-btn" onclick="filterCards('straight', this)">Straight</button>
+  <button class="filter-btn" onclick="filterCards('wavy', this)">Wavy</button>
+  <button class="filter-btn" onclick="filterCards('curly', this)">Curly</button>
+  <button class="filter-btn" onclick="filterCards('kinky', this)">Kinky</button>
+  <button class="filter-btn" onclick="filterCards('dreadlocks', this)">Dreadlocks</button>
+</div>
+
+<!-- Tabs -->
+<div class="tabs">
+  <button class="tab active" onclick="switchTab('gallery', this)">🖼 Gallery</button>
+  <button class="tab" onclick="switchTab('ar', this)">✨ AR Try-On</button>
+  <button class="tab" onclick="switchTab('recommendations', this)">💡 Recommendations</button>
+</div>
+
+<div class="container">
+
+  <!-- ===== GALLERY TAB ===== -->
+  <div id="tab-gallery">
+    <div class="gallery-grid" id="galleryGrid"></div>
+  </div>
+
+  <!-- ===== AR TAB ===== -->
+  <div id="tab-ar" class="ar-section">
+    <div class="ar-container">
+      <!-- Camera -->
+      <div>
+        <div class="ar-camera-box">
+          <video id="arVideo" autoplay playsinline muted></video>
+          <canvas id="arCanvas"></canvas>
+          <div class="ar-overlay" id="arOverlay">
+            <div style="font-size:3rem">📷</div>
+            <p>Start your camera to try on<br>hairstyles in real-time</p>
+            <button class="start-camera-btn" onclick="startCamera()">Start Camera</button>
+          </div>
+          <div class="ar-selected-style" id="arSelectedLabel" style="display:none"></div>
+        </div>
+        <div class="ar-note">
+          💡 <strong>How it works:</strong> Select a hairstyle from the panel, then position your face in the camera. The overlay shows how the style frames your face. For best results, face forward in good lighting.
+        </div>
+      </div>
+
+      <!-- Style Picker -->
+      <div class="ar-style-picker">
+        <div class="ar-picker-title">✦ Choose a Style</div>
+        <div class="ar-style-list" id="arStyleList"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== RECOMMENDATIONS TAB ===== -->
+  <div id="tab-recommendations" class="rec-section">
+    <div class="rec-selector">
+      <h3>What's Your Hair Type?</h3>
+      <p>Select your hair type to get personalized style recommendations</p>
+      <div class="hair-type-btns" id="hairTypeBtns">
+        <button class="hair-type-btn" onclick="showRecs('straight', this)">💧 Straight</button>
+        <button class="hair-type-btn" onclick="showRecs('wavy', this)">〰️ Wavy</button>
+        <button class="hair-type-btn" onclick="showRecs('curly', this)">🌀 Curly</button>
+        <button class="hair-type-btn" onclick="showRecs('kinky', this)">⚡ Kinky / Coily</button>
+        <button class="hair-type-btn" onclick="showRecs('dreadlocks', this)">🎵 Dreadlocks</button>
+        <button class="hair-type-btn" onclick="showRecs('dry', this)">🌵 Dry Hair</button>
+        <button class="hair-type-btn" onclick="showRecs('frizzy', this)">☁️ Frizzy Hair</button>
+        <button class="hair-type-btn" onclick="showRecs('hairfall', this)">🍂 Hair Fall</button>
+        <button class="hair-type-btn" onclick="showRecs('healthy', this)">✨ Healthy</button>
+        <button class="hair-type-btn" onclick="showRecs('bald', this)">🧑‍🦲 Bald / Thinning</button>
+      </div>
+    </div>
+    <div class="rec-results" id="recResults">
+      <div class="rec-header">
+        <h3 id="recTitle">Recommended Styles</h3>
+        <span class="rec-badge" id="recBadge">For Your Type</span>
+      </div>
+      <div class="gallery-grid" id="recGrid"></div>
+    </div>
+  </div>
+
+</div>
+
+<!-- ===== MODAL ===== -->
+<div class="modal-overlay" id="modal" onclick="closeModal(event)">
+  <div class="modal" style="position:relative">
+    <button class="modal-close" onclick="closeModalDirect()">✕</button>
+    <div class="modal-image" id="modalImage"></div>
+    <div class="modal-body">
+      <div class="card-tags" id="modalTags"></div>
+      <div class="modal-title" id="modalTitle"></div>
+      <div class="modal-desc" id="modalDesc"></div>
+      <div class="modal-section-title">HOW TO ACHIEVE THIS LOOK</div>
+      <div class="modal-steps" id="modalSteps"></div>
+    </div>
+    <div class="modal-footer">
+      <button class="modal-try-btn" onclick="goToAR()">✨ Try On with AR</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ===== HAIRSTYLE DATA =====
+const hairstyles = [
+  // STRAIGHT
+  {
+    id: 1, name: "Sleek Blowout", emoji: "💆", type: "straight", difficulty: "easy",
+    desc: "A classic smooth, voluminous blowout that adds body and shine to straight hair.",
+    arColor: "#8B4513", arLength: "long",
+    steps: ["Wash and towel dry hair", "Apply heat protectant spray", "Blow dry with round brush, lifting at roots", "Finish with a light serum for shine", "Set with cool air for 30 seconds"]
+  },
+  {
+    id: 2, name: "Sleek Ponytail", emoji: "🎀", type: "straight", difficulty: "easy",
+    desc: "A polished high or low ponytail that works for any occasion.",
+    arColor: "#4a3728", arLength: "long",
+    steps: ["Brush hair smooth", "Apply edge control or hair gel to tame flyaways", "Gather at desired height and secure", "Wrap a piece of hair around the band", "Mist with light-hold hairspray"]
+  },
+  {
+    id: 3, name: "Side-Swept Layers", emoji: "✂️", type: "straight", difficulty: "medium",
+    desc: "Layered cut with a dramatic side sweep that frames the face beautifully.",
+    arColor: "#6b4c3b", arLength: "medium",
+    steps: ["Ask your stylist for long layers", "Part hair deeply to one side", "Blow dry over to enhance the sweep", "Use a large barrel curling iron for soft movement", "Finish with a soft-hold spray"]
+  },
+  // WAVY
+  {
+    id: 4, name: "Beach Waves", emoji: "🌊", type: "wavy", difficulty: "easy",
+    desc: "Effortless, tousled waves that look like you just came from the ocean.",
+    arColor: "#c4956a", arLength: "long",
+    steps: ["Apply mousse to damp hair", "Scrunch and diffuse dry on low heat", "Once dry, scrunch out the crunch", "Spray with sea salt spray", "Tousle with fingers for natural finish"]
+  },
+  {
+    id: 5, name: "Half-Up Bun", emoji: "🌸", type: "wavy", difficulty: "easy",
+    desc: "A chic half-up style that shows off your natural wave texture.",
+    arColor: "#a0724f", arLength: "long",
+    steps: ["Let waves air dry or diffuse", "Section top half of hair", "Twist loosely and secure as a bun", "Pull out a few face-framing pieces", "Finish with texturizing spray"]
+  },
+  // CURLY
+  {
+    id: 6, name: "Defined Curl Wash & Go", emoji: "🌀", type: "curly", difficulty: "medium",
+    desc: "Showcase your natural curl pattern with maximum definition and bounce.",
+    arColor: "#5c3d2e", arLength: "medium",
+    steps: ["Co-wash and condition thoroughly", "Apply leave-in conditioner on soaking wet hair", "Rake through gel from roots to ends", "Diffuse dry on low heat", "Scrunch out the cast when fully dry"]
+  },
+  {
+    id: 7, name: "Pineapple Updo", emoji: "🍍", type: "curly", difficulty: "easy",
+    desc: "A loose high ponytail that preserves your curl pattern overnight and looks stunning.",
+    arColor: "#7a4f3a", arLength: "long",
+    steps: ["Flip head upside down", "Gather all curls to the very top", "Secure loosely with a silk scrunchie", "Let curls fall naturally around the crown", "Perfect for second-day hair!"]
+  },
+  {
+    id: 8, name: "Twist Out", emoji: "🔄", type: "curly", difficulty: "medium",
+    desc: "Two-strand twists unraveled to reveal beautifully defined spiral curls.",
+    arColor: "#6b3a2a", arLength: "medium",
+    steps: ["Apply twisting butter to damp hair", "Divide into sections and two-strand twist each", "Allow to fully dry (air or diffuse)", "Apply oil to fingers and unravel each twist", "Separate gently for volume"]
+  },
+  // KINKY
+  {
+    id: 9, name: "Afro", emoji: "⚡", type: "kinky", difficulty: "easy",
+    desc: "A full, round natural afro that celebrates the beauty of coily hair.",
+    arColor: "#3d2314", arLength: "medium",
+    steps: ["Moisturize thoroughly with LOC method", "Detangle section by section", "Pick out from roots using an afro pick", "Shape into desired roundness", "Finish with a light sheen spray"]
+  },
+  {
+    id: 10, name: "Bantu Knots", emoji: "🔘", type: "kinky", difficulty: "medium",
+    desc: "Traditional African style — small coiled knots that also create gorgeous waves when undone.",
+    arColor: "#4a2c1a", arLength: "short",
+    steps: ["Section damp hair into equal parts", "Apply styling cream to each section", "Twist each section tightly", "Coil around itself into a knot", "Secure the end and let fully dry before unraveling"]
+  },
+  {
+    id: 11, name: "Protective Box Braids", emoji: "🎵", type: "kinky", difficulty: "hard",
+    desc: "Classic box braids that protect natural hair and allow for endless styling options.",
+    arColor: "#2d1a0e", arLength: "long",
+    steps: ["Part hair into clean square sections", "Apply edge control to each section", "Braid from root — add extension hair if desired", "Braid to desired length", "Dip ends in hot water to seal (synthetic hair)"]
+  },
+  // DREADLOCKS
+  {
+    id: 12, name: "Loc Updo", emoji: "👑", type: "dreadlocks", difficulty: "easy",
+    desc: "A regal updo that gathers locs into an elegant crown or bun.",
+    arColor: "#3b2a1a", arLength: "long",
+    steps: ["Gather locs to desired position", "Twist or coil into bun shape", "Pin with large bobby pins or loc pins", "Leave some locs out to frame the face", "Mist with loc moisturizing spray"]
+  },
+  {
+    id: 13, name: "Half-Up Loc Style", emoji: "🌿", type: "dreadlocks", difficulty: "easy",
+    desc: "A relaxed half-up style that shows off both length and texture of your locs.",
+    arColor: "#4d3520", arLength: "long",
+    steps: ["Section top half of locs", "Gather and loosely twist together", "Secure with a hair tie or loc band", "Let remaining locs hang freely", "Optional: add decorative beads or wraps"]
+  },
+  // DRY
+  {
+    id: 14, name: "Protective Braid", emoji: "🌾", type: "dry", difficulty: "easy",
+    desc: "A simple protective style that tucks away dry ends and reduces breakage.",
+    arColor: "#8a6545", arLength: "long",
+    steps: ["Moisturize hair thoroughly", "Apply a leave-in conditioner", "Braid loosely — tight braids cause more breakage", "Seal ends with castor oil", "Cover with silk scarf at night"]
+  },
+  {
+    id: 15, name: "Low Bun with Oil Sheen", emoji: "🍯", type: "dry", difficulty: "easy",
+    desc: "A sleek low bun that minimizes manipulation and adds gorgeous shine to dry hair.",
+    arColor: "#7a5535", arLength: "medium",
+    steps: ["Apply argan oil generously", "Smooth hair back gently", "Gather into a low bun", "Secure without pulling tightly", "Mist with shine spray for luminous finish"]
+  },
+  // FRIZZY
+  {
+    id: 16, name: "Sleek Low Ponytail", emoji: "🪢", type: "frizzy", difficulty: "easy",
+    desc: "Tame frizz with a smooth, polished low ponytail sealed with anti-humidity serum.",
+    arColor: "#6b5040", arLength: "long",
+    steps: ["Apply anti-frizz serum to damp hair", "Blow dry smooth with a paddle brush", "Gather into low ponytail", "Apply gel to smooth any flyaways", "Seal with cold water rinse first next wash"]
+  },
+  // HAIRFALL
+  {
+    id: 17, name: "Loose Waves", emoji: "💫", type: "hairfall", difficulty: "easy",
+    desc: "Soft loose waves that add volume and the appearance of fullness without stressing fragile hair.",
+    arColor: "#9b7a5a", arLength: "medium",
+    steps: ["Use volumizing mousse on roots", "Blow dry gently on medium heat", "Loosely curl with large barrel iron", "Do not over-manipulate", "Finish with lightweight volume spray — avoid heavy products"]
+  },
+  // HEALTHY
+  {
+    id: 18, name: "Bouncy Blowout", emoji: "✨", type: "healthy", difficulty: "easy",
+    desc: "Show off healthy, shiny hair with a full-bodied blowout that radiates vitality.",
+    arColor: "#c4956a", arLength: "long",
+    steps: ["Apply heat protectant", "Blow dry with large round brush for volume", "Curl ends slightly inward", "Finish with a light shine serum", "Set with a light-hold spray"]
+  },
+  {
+    id: 19, name: "Natural Texture", emoji: "🌟", type: "healthy", difficulty: "easy",
+    desc: "Let your healthy hair speak for itself — air dry and enhance your natural texture.",
+    arColor: "#b08060", arLength: "medium",
+    steps: ["Wash with balancing shampoo", "Apply lightweight conditioner", "Gently squeeze excess water out", "Apply a small amount of hair oil", "Air dry completely — no heat needed!"]
+  },
+  // BALD
+  {
+    id: 20, name: "Scalp Care Routine", emoji: "🧑‍🦲", type: "bald", difficulty: "easy",
+    desc: "A clean, confident look with a polished scalp care routine that promotes confidence.",
+    arColor: "#skin", arLength: "none",
+    steps: ["Cleanse scalp with gentle shampoo", "Apply moisturizing scalp serum", "Massage for 5 minutes to stimulate circulation", "Apply SPF scalp protection spray", "Embrace and own your look confidently!"]
+  },
+];
+
+// ===== RECOMMENDATIONS DATA =====
+const recommendations = {
+  straight: { title: "For Straight Hair", badge: "Straight ✨", ids: [1, 2, 3, 18] },
+  wavy:     { title: "For Wavy Hair",     badge: "Wavy 〰️",    ids: [4, 5, 18, 19] },
+  curly:    { title: "For Curly Hair",    badge: "Curly 🌀",   ids: [6, 7, 8] },
+  kinky:    { title: "For Kinky/Coily",   badge: "Kinky ⚡",   ids: [9, 10, 11] },
+  dreadlocks:{ title: "For Locs",         badge: "Locs 🎵",   ids: [12, 13] },
+  dry:      { title: "For Dry Hair",      badge: "Dry 🌵",     ids: [14, 15, 8] },
+  frizzy:   { title: "For Frizzy Hair",   badge: "Frizzy ☁️",  ids: [16, 1, 2] },
+  hairfall: { title: "For Hair Fall",     badge: "Hair Fall 🍂", ids: [17, 14, 15] },
+  healthy:  { title: "For Healthy Hair",  badge: "Healthy ✨",  ids: [18, 19, 1, 4] },
+  bald:     { title: "For Thinning Hair", badge: "Bald 🧑‍🦲",  ids: [20, 17] },
+};
+
+// ===== RENDER CARD =====
+function renderCard(style, delay = 0) {
+  const diffClass = { easy: 'tag-difficulty-easy', medium: 'tag-difficulty-medium', hard: 'tag-difficulty-hard' }[style.difficulty];
+  return `
+    <div class="style-card fade-up" style="animation-delay:${delay}s" 
+         data-type="${style.type}" onclick="openModal(${style.id})">
+      <div class="card-image-placeholder">${style.emoji}</div>
+      <div class="card-body">
+        <div class="card-tags">
+          <span class="tag tag-type">${style.type}</span>
+          <span class="tag ${diffClass}">${style.difficulty}</span>
+        </div>
+        <div class="card-name">${style.name}</div>
+        <div class="card-desc">${style.desc}</div>
+      </div>
+      <div class="card-footer">
+        <span class="card-footer-text">${style.steps.length} steps</span>
+        <button class="try-btn" onclick="event.stopPropagation(); goToARWithStyle(${style.id})">✨ Try On</button>
+      </div>
+    </div>`;
+}
+
+// ===== RENDER GALLERY =====
+function renderGallery(filter = 'all') {
+  const grid = document.getElementById('galleryGrid');
+  const filtered = filter === 'all' ? hairstyles : hairstyles.filter(s => s.type === filter);
+  if (filtered.length === 0) {
+    grid.innerHTML = `<div class="empty-state" style="grid-column:1/-1"><div class="icon">✂️</div><p>No styles found for this filter</p></div>`;
+    return;
+  }
+  grid.innerHTML = filtered.map((s, i) => renderCard(s, i * 0.05)).join('');
+}
+
+// ===== FILTER =====
+function filterCards(type, btn) {
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderGallery(type);
+}
+
+// ===== TABS =====
+function switchTab(tab, btn) {
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('tab-gallery').style.display = 'none';
+  document.getElementById('tab-ar').classList.remove('visible');
+  document.getElementById('tab-recommendations').classList.remove('visible');
+
+  if (tab === 'gallery') {
+    document.getElementById('tab-gallery').style.display = 'block';
+  } else if (tab === 'ar') {
+    document.getElementById('tab-ar').classList.add('visible');
+    renderARList();
+  } else {
+    document.getElementById('tab-recommendations').classList.add('visible');
+  }
+}
+
+// ===== MODAL =====
+let currentModalStyle = null;
+function openModal(id) {
+  const style = hairstyles.find(s => s.id === id);
+  currentModalStyle = style;
+  document.getElementById('modalImage').textContent = style.emoji;
+  document.getElementById('modalTitle').textContent = style.name;
+  document.getElementById('modalDesc').textContent = style.desc;
+  const diffClass = { easy: 'tag-difficulty-easy', medium: 'tag-difficulty-medium', hard: 'tag-difficulty-hard' }[style.difficulty];
+  document.getElementById('modalTags').innerHTML = `
+    <span class="tag tag-type">${style.type}</span>
+    <span class="tag ${diffClass}">${style.difficulty}</span>`;
+  document.getElementById('modalSteps').innerHTML = style.steps.map((step, i) =>
+    `<div class="modal-step"><div class="step-num">${i+1}</div><span>${step}</span></div>`
+  ).join('');
+  document.getElementById('modal').classList.add('open');
+}
+
+function closeModal(e) {
+  if (e.target === document.getElementById('modal')) closeModalDirect();
+}
+function closeModalDirect() {
+  document.getElementById('modal').classList.remove('open');
+}
+
+function goToAR() {
+  closeModalDirect();
+  const arTab = document.querySelector('.tab:nth-child(2)');
+  switchTab('ar', arTab);
+  if (currentModalStyle) selectARStyle(currentModalStyle.id);
+}
+
+// ===== AR =====
+let arStream = null;
+let selectedARStyle = null;
+
+function renderARList() {
+  const list = document.getElementById('arStyleList');
+  list.innerHTML = hairstyles.map(s => `
+    <div class="ar-style-item ${selectedARStyle?.id === s.id ? 'selected' : ''}" 
+         id="aritem-${s.id}" onclick="selectARStyle(${s.id})">
+      <div class="ar-style-emoji">${s.emoji}</div>
+      <div>
+        <div class="ar-style-name">${s.name}</div>
+        <div class="ar-style-type">${s.type} • ${s.difficulty}</div>
+      </div>
+    </div>`).join('');
+}
+
+function selectARStyle(id) {
+  selectedARStyle = hairstyles.find(s => s.id === id);
+  document.querySelectorAll('.ar-style-item').forEach(el => el.classList.remove('selected'));
+  const el = document.getElementById(`aritem-${id}`);
+  if (el) { el.classList.add('selected'); el.scrollIntoView({ behavior: 'smooth', block: 'nearest' }); }
+  const label = document.getElementById('arSelectedLabel');
+  label.textContent = `${selectedARStyle.emoji} ${selectedARStyle.name}`;
+  label.style.display = 'block';
+  drawAROverlay();
+}
+
+function goToARWithStyle(id) {
+  const arTab = document.querySelector('.tab:nth-child(2)');
+  switchTab('ar', arTab);
+  setTimeout(() => selectARStyle(id), 100);
+}
+
+async function startCamera() {
+  try {
+    arStream = await navigator.mediaDevices.getUserMedia({
+      video: { facingMode: 'user', width: { ideal: 640 }, height: { ideal: 480 } },
+      audio: false
+    });
+    const video = document.getElementById('arVideo');
+    video.srcObject = arStream;
+    document.getElementById('arOverlay').classList.add('hidden');
+    renderARList();
+
+    video.addEventListener('loadedmetadata', () => {
+      resizeCanvas();
+      setInterval(drawAROverlay, 50);
+    });
+
+    window.addEventListener('resize', resizeCanvas);
+  } catch (err) {
+    alert('Could not access camera. Please allow camera permission in Chrome flags or System Settings.');
+  }
+}
+
+function resizeCanvas() {
+  const video = document.getElementById('arVideo');
+  const canvas = document.getElementById('arCanvas');
+  // Match canvas to the displayed size of the video element
+  const rect = video.getBoundingClientRect();
+  canvas.width = rect.width || video.videoWidth || 640;
+  canvas.height = rect.height || video.videoHeight || 480;
+}
+
+function drawAROverlay() {
+  const canvas = document.getElementById('arCanvas');
+  const ctx = canvas.getContext('2d');
+  const w = canvas.width;
+  const h = canvas.height;
+
+  ctx.clearRect(0, 0, w, h);
+
+  if (!selectedARStyle || !arStream || w === 0 || h === 0) return;
+
+  const style = selectedARStyle;
+
+  const hairColors = {
+    straight: '#8B5E3C', wavy: '#C4956A', curly: '#4a2a1a',
+    kinky: '#2d1a0e', dreadlocks: '#3b2510', dry: '#9a6b40',
+    frizzy: '#7a4f2a', hairfall: '#8a6040', healthy: '#7a5030',
+    bald: '#d4a574', notbald: '#8a6040', default: '#7a5035'
+  };
+  const color = hairColors[style.type] || hairColors.default;
+
+  // Face center estimate — upper 40% of frame
+  const cx = w / 2;
+  const cy = h * 0.38;
+
+  ctx.save();
+
+  if (style.type === 'bald' || style.arLength === 'none') {
+    // Shiny bald head
+    const grad = ctx.createRadialGradient(cx, cy * 0.7, 5, cx, cy * 0.7, w * 0.25);
+    grad.addColorStop(0, 'rgba(255,220,150,0.55)');
+    grad.addColorStop(0.5, 'rgba(210,170,110,0.3)');
+    grad.addColorStop(1, 'transparent');
+    ctx.fillStyle = grad;
+    ctx.beginPath();
+    ctx.ellipse(cx, cy * 0.72, w * 0.22, h * 0.2, 0, 0, Math.PI * 2);
+    ctx.fill();
+
+  } else if (style.arLength === 'long') {
+    // ── TOP/CROWN hair ──
+    const topGrad = ctx.createRadialGradient(cx, cy * 0.45, 0, cx, cy * 0.45, w * 0.4);
+    topGrad.addColorStop(0, color + 'ee');
+    topGrad.addColorStop(0.5, color + 'aa');
+    topGrad.addColorStop(1, 'transparent');
+    ctx.fillStyle = topGrad;
+    ctx.beginPath();
+    ctx.ellipse(cx, cy * 0.45, w * 0.38, h * 0.22, 0, 0, Math.PI * 2);
+    ctx.fill();
+
+    // ── LEFT side flowing down ──
+    ctx.globalAlpha = 0.75;
+    const leftGrad = ctx.createLinearGradient(cx - w*0.35, cy*0.3, cx - w*0.2, h*0.95);
+    leftGrad.addColorStop(0, color + 'cc');
+    leftGrad.addColorStop(1, color + '22');
+    ctx.fillStyle = leftGrad;
+    ctx.beginPath();
+    ctx.moveTo(cx - w*0.28, cy*0.3);
+    ctx.bezierCurveTo(cx - w*0.42, cy*0.5, cx - w*0.44, cy*0.8, cx - w*0.32, h*0.92);
+    ctx.bezierCurveTo(cx - w*0.22, h*0.95, cx - w*0.18, h*0.85, cx - w*0.2, cy*0.7);
+    ctx.bezierCurveTo(cx - w*0.22, cy*0.45, cx - w*0.2, cy*0.3, cx - w*0.28, cy*0.3);
+    ctx.fill();
+
+    // ── RIGHT side flowing down ──
+    const rightGrad = ctx.createLinearGradient(cx + w*0.35, cy*0.3, cx + w*0.2, h*0.95);
+    rightGrad.addColorStop(0, color + 'cc');
+    rightGrad.addColorStop(1, color + '22');
+    ctx.fillStyle = rightGrad;
+    ctx.beginPath();
+    ctx.moveTo(cx + w*0.28, cy*0.3);
+    ctx.bezierCurveTo(cx + w*0.42, cy*0.5, cx + w*0.44, cy*0.8, cx + w*0.32, h*0.92);
+    ctx.bezierCurveTo(cx + w*0.22, h*0.95, cx + w*0.18, h*0.85, cx + w*0.2, cy*0.7);
+    ctx.bezierCurveTo(cx + w*0.22, cy*0.45, cx + w*0.2, cy*0.3, cx + w*0.28, cy*0.3);
+    ctx.fill();
+
+  } else if (style.arLength === 'medium') {
+    // Top
+    ctx.globalAlpha = 0.78;
+    const topGrad = ctx.createRadialGradient(cx, cy * 0.4, 0, cx, cy * 0.4, w * 0.38);
+    topGrad.addColorStop(0, color + 'dd');
+    topGrad.addColorStop(0.6, color + '99');
+    topGrad.addColorStop(1, 'transparent');
+    ctx.fillStyle = topGrad;
+    ctx.beginPath();
+    ctx.ellipse(cx, cy * 0.4, w * 0.36, h * 0.2, 0, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Sides medium length
+    ctx.globalAlpha = 0.65;
+    ctx.fillStyle = color + 'bb';
+    // Left
+    ctx.beginPath();
+    ctx.moveTo(cx - w*0.26, cy*0.28);
+    ctx.bezierCurveTo(cx - w*0.40, cy*0.45, cx - w*0.40, cy*0.75, cx - w*0.28, h*0.68);
+    ctx.bezierCurveTo(cx - w*0.18, h*0.7, cx - w*0.15, cy*0.65, cx - w*0.18, cy*0.5);
+    ctx.bezierCurveTo(cx - w*0.20, cy*0.35, cx - w*0.18, cy*0.28, cx - w*0.26, cy*0.28);
+    ctx.fill();
+    // Right
+    ctx.beginPath();
+    ctx.moveTo(cx + w*0.26, cy*0.28);
+    ctx.bezierCurveTo(cx + w*0.40, cy*0.45, cx + w*0.40, cy*0.75, cx + w*0.28, h*0.68);
+    ctx.bezierCurveTo(cx + w*0.18, h*0.7, cx + w*0.15, cy*0.65, cx + w*0.18, cy*0.5);
+    ctx.bezierCurveTo(cx + w*0.20, cy*0.35, cx + w*0.18, cy*0.28, cx + w*0.26, cy*0.28);
+    ctx.fill();
+
+  } else {
+    // Short hair — just top crown
+    ctx.globalAlpha = 0.8;
+    const topGrad = ctx.createRadialGradient(cx, cy * 0.38, 0, cx, cy * 0.38, w * 0.3);
+    topGrad.addColorStop(0, color + 'ee');
+    topGrad.addColorStop(0.6, color + 'aa');
+    topGrad.addColorStop(1, 'transparent');
+    ctx.fillStyle = topGrad;
+    ctx.beginPath();
+    ctx.ellipse(cx, cy * 0.38, w * 0.28, h * 0.16, 0, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Kinky/afro — extra puff
+    if (style.type === 'kinky') {
+      ctx.globalAlpha = 0.55;
+      ctx.fillStyle = color + 'bb';
+      ctx.beginPath();
+      ctx.ellipse(cx, cy * 0.3, w * 0.36, h * 0.22, 0, 0, Math.PI * 2);
+      ctx.fill();
+    }
+  }
+
+  // Wavy lines on top of hair
+  if (['wavy', 'curly', 'frizzy'].includes(style.type)) {
+    ctx.globalAlpha = 0.4;
+    ctx.strokeStyle = '#ffffff';
+    ctx.lineWidth = 2;
+    for (let i = 0; i < 5; i++) {
+      const startX = cx - w*0.3 + i * (w*0.15);
+      ctx.beginPath();
+      ctx.moveTo(startX, cy * 0.5);
+      for (let x = 0; x < w * 0.12; x += 4) {
+        ctx.lineTo(startX + x, cy * 0.5 + Math.sin(x * 0.3) * 6);
+      }
+      ctx.stroke();
+    }
+  }
+
+  // Dreadlocks lines
+  if (style.type === 'dreadlocks') {
+    ctx.globalAlpha = 0.5;
+    ctx.strokeStyle = color;
+    ctx.lineWidth = 5;
+    const locCount = 8;
+    for (let i = 0; i < locCount; i++) {
+      const x = cx - w*0.32 + i * (w*0.64 / (locCount-1));
+      ctx.beginPath();
+      ctx.moveTo(x, cy * 0.4);
+      ctx.bezierCurveTo(x + 8, cy*0.6, x - 8, cy*0.8, x + 5, h*0.85);
+      ctx.stroke();
+    }
+  }
+
+  ctx.restore();
+
+  // ── Label overlay ──
+  ctx.save();
+  ctx.globalAlpha = 1;
+  ctx.fillStyle = 'rgba(10,10,15,0.75)';
+  const labelW = 190;
+  const labelH = 38;
+  const labelX = w - labelW - 12;
+  const labelY = h - labelH - 12;
+  ctx.beginPath();
+  ctx.roundRect(labelX, labelY, labelW, labelH, 10);
+  ctx.fill();
+  ctx.fillStyle = '#c8a96e';
+  ctx.font = 'bold 13px sans-serif';
+  ctx.textAlign = 'center';
+  ctx.fillText(`${style.emoji}  ${style.name}`, labelX + labelW/2, labelY + 24);
+  ctx.restore();
+}
+
+// ===== RECOMMENDATIONS =====
+function showRecs(type, btn) {
+  document.querySelectorAll('.hair-type-btn').forEach(b => b.classList.remove('selected'));
+  btn.classList.add('selected');
+
+  const rec = recommendations[type];
+  const styles = hairstyles.filter(s => rec.ids.includes(s.id));
+
+  document.getElementById('recTitle').textContent = rec.title;
+  document.getElementById('recBadge').textContent = rec.badge;
+  document.getElementById('recGrid').innerHTML = styles.map((s, i) => renderCard(s, i * 0.05)).join('');
+  document.getElementById('recResults').classList.add('visible');
+}
+
+// ===== INIT =====
+renderGallery();
+
+// Check if coming from results page with a hair type
+const savedType = sessionStorage.getItem('hairType');
+if (savedType) {
+  const normalized = savedType.toLowerCase().trim();
+  if (recommendations[normalized]) {
+    // Auto-show recommendations tab
+    setTimeout(() => {
+      const recTab = document.querySelector('.tab:nth-child(3)');
+      switchTab('recommendations', recTab);
+      const btn = [...document.querySelectorAll('.hair-type-btn')].find(b =>
+        b.getAttribute('onclick').includes(`'${normalized}'`)
+      );
+      if (btn) showRecs(normalized, btn);
+    }, 300);
+  }
+}
+</script>
+
+</body>
+</html>

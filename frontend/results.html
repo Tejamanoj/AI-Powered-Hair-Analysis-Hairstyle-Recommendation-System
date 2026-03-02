@@ -1,0 +1,1211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Hair Analysis Report</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0a0a0f;
+      --card: #13131a;
+      --border: #2a2a3a;
+      --accent: #c8a96e;
+      --accent2: #7c6fcd;
+      --text: #e8e8f0;
+      --muted: #888899;
+      /* Per-class colors */
+      --straight: #60b8f5;
+      --wavy:     #5ec4b0;
+      --bald:     #aaaaaa;
+      --curly:    #f0a060;
+      --dreadlocks: #c8a96e;
+      --dry:      #e8834a;
+      --frizzy:   #7c6fcd;
+      --hairfall: #e85a5a;
+      --healthy:  #4acea8;
+      --kinky:    #d97cd4;
+      --notbald:  #6fcf6f;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'DM Sans', sans-serif;
+      min-height: 100vh;
+    }
+
+    /* ===== HEADER ===== */
+    header {
+      padding: 20px 40px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: rgba(19,19,26,0.95);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      backdrop-filter: blur(10px);
+    }
+
+    header h1 {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.4rem;
+      color: var(--accent);
+      letter-spacing: 1px;
+    }
+
+    .header-btns { display: flex; gap: 12px; }
+
+    .btn {
+      padding: 10px 22px;
+      border-radius: 8px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.85rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s;
+      border: none;
+    }
+
+    .btn-outline {
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--text);
+    }
+    .btn-outline:hover { border-color: var(--accent); color: var(--accent); }
+
+    .btn-primary { background: var(--accent); color: #0a0a0f; font-weight: 600; }
+    .btn-primary:hover { background: #d4b87a; transform: translateY(-1px); }
+
+    /* ===== MAIN CONTENT ===== */
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 40px 20px 80px;
+    }
+
+    /* ===== IMAGE SECTION ===== */
+    .image-section {
+      position: relative;
+      border-radius: 20px;
+      overflow: hidden;
+      margin-bottom: 32px;
+      border: 1px solid var(--border);
+      background: var(--card);
+    }
+
+    .uploaded-image {
+      width: 100%;
+      max-height: 420px;
+      object-fit: cover;
+      display: block;
+    }
+
+    .image-overlay {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      padding: 30px;
+      background: linear-gradient(transparent, rgba(10,10,15,0.95));
+    }
+
+    .hair-type-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 18px;
+      border-radius: 50px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      margin-bottom: 8px;
+      letter-spacing: 0.5px;
+      border: 1px solid currentColor;
+    }
+
+    .image-overlay h2 {
+      font-family: 'Playfair Display', serif;
+      font-size: 2rem;
+      margin-bottom: 4px;
+    }
+
+    .confidence-bar-wrap {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-top: 10px;
+    }
+
+    .confidence-bar {
+      flex: 1;
+      height: 6px;
+      background: rgba(255,255,255,0.1);
+      border-radius: 10px;
+      overflow: hidden;
+    }
+
+    .confidence-fill {
+      height: 100%;
+      border-radius: 10px;
+      transition: width 1s ease;
+    }
+
+    .confidence-text {
+      font-size: 0.9rem;
+      color: var(--muted);
+      white-space: nowrap;
+    }
+
+    /* ===== SECTIONS ===== */
+    .section {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 28px;
+      margin-bottom: 20px;
+    }
+
+    .section-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 20px;
+      padding-bottom: 16px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .section-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.2rem;
+      flex-shrink: 0;
+    }
+
+    .icon-overview    { background: rgba(200,169,110,0.15); }
+    .icon-causes      { background: rgba(232,90,90,0.15); }
+    .icon-tips        { background: rgba(74,206,168,0.15); }
+    .icon-products    { background: rgba(124,111,205,0.15); }
+    .icon-precautions { background: rgba(232,131,74,0.15); }
+    .icon-routine     { background: rgba(200,169,110,0.15); }
+
+    .section-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.2rem;
+      color: var(--accent);
+    }
+
+    .section-subtitle {
+      font-size: 0.8rem;
+      color: var(--muted);
+      margin-top: 2px;
+    }
+
+    /* ===== OVERVIEW GRID ===== */
+    .overview-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+    }
+
+    .overview-item {
+      background: rgba(255,255,255,0.03);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 16px;
+      text-align: center;
+    }
+
+    .overview-label {
+      font-size: 0.75rem;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 8px;
+    }
+
+    .overview-value {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.3rem;
+      color: var(--text);
+    }
+
+    /* ===== LISTS ===== */
+    .info-list { display: flex; flex-direction: column; gap: 12px; }
+
+    .info-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      padding: 14px;
+      background: rgba(255,255,255,0.02);
+      border-radius: 10px;
+      border: 1px solid rgba(255,255,255,0.05);
+      font-size: 0.9rem;
+      line-height: 1.5;
+      color: #ccccd8;
+    }
+
+    .info-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      margin-top: 6px;
+      flex-shrink: 0;
+    }
+
+    /* ===== PRODUCTS GRID ===== */
+    .products-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+    }
+
+    .product-card {
+      background: rgba(255,255,255,0.02);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 16px;
+    }
+
+    .product-type {
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--accent);
+      margin-bottom: 6px;
+    }
+
+    .product-name {
+      font-size: 0.95rem;
+      font-weight: 500;
+      color: var(--text);
+      margin-bottom: 4px;
+    }
+
+    .product-desc { font-size: 0.8rem; color: var(--muted); line-height: 1.4; }
+
+    /* ===== SEVERITY METER ===== */
+    .severity-wrap { margin-bottom: 20px; }
+
+    .severity-label {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.85rem;
+      color: var(--muted);
+      margin-bottom: 8px;
+    }
+
+    .severity-bar {
+      height: 10px;
+      background: rgba(255,255,255,0.08);
+      border-radius: 10px;
+      overflow: hidden;
+    }
+
+    .severity-fill {
+      height: 100%;
+      border-radius: 10px;
+      background: linear-gradient(90deg, #4acea8, #e8834a, #e85a5a);
+      transition: width 1.2s ease;
+    }
+
+    /* ===== ROUTINE TABLE ===== */
+    .routine-table { width: 100%; border-collapse: collapse; }
+
+    .routine-table th {
+      text-align: left;
+      padding: 10px 14px;
+      font-size: 0.78rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--muted);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .routine-table td {
+      padding: 12px 14px;
+      font-size: 0.88rem;
+      color: #ccccd8;
+      border-bottom: 1px solid rgba(255,255,255,0.04);
+    }
+
+    .routine-table tr:last-child td { border-bottom: none; }
+    .routine-time { color: var(--accent); font-weight: 500; white-space: nowrap; }
+
+    /* ===== PDF BUTTON ===== */
+    .pdf-section { text-align: center; padding: 40px 20px; }
+
+    .pdf-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 16px 40px;
+      background: linear-gradient(135deg, var(--accent), #d4906a);
+      color: #0a0a0f;
+      border: none;
+      border-radius: 50px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.3s;
+      letter-spacing: 0.5px;
+    }
+
+    .pdf-btn:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 15px 40px rgba(200,169,110,0.3);
+    }
+
+    /* ===== LOADING ===== */
+    #loading {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 60vh;
+      gap: 20px;
+    }
+
+    .spinner {
+      width: 50px;
+      height: 50px;
+      border: 3px solid var(--border);
+      border-top-color: var(--accent);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    #report { display: none; }
+
+    /* ===== ANIMATIONS ===== */
+    .fade-in {
+      animation: fadeIn 0.6s ease forwards;
+      opacity: 0;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .section:nth-child(1) { animation-delay: 0.1s; }
+    .section:nth-child(2) { animation-delay: 0.2s; }
+    .section:nth-child(3) { animation-delay: 0.3s; }
+    .section:nth-child(4) { animation-delay: 0.4s; }
+    .section:nth-child(5) { animation-delay: 0.5s; }
+    .section:nth-child(6) { animation-delay: 0.6s; }
+
+    @media (max-width: 600px) {
+      .overview-grid { grid-template-columns: repeat(2, 1fr); }
+      .products-grid { grid-template-columns: 1fr; }
+      header { padding: 16px 20px; }
+      .container { padding: 24px 16px 60px; }
+      .image-overlay h2 { font-size: 1.4rem; }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>✦ Hair Analysis Report</h1>
+  <div class="header-btns">
+    <button class="btn btn-outline" onclick="window.location.href='dashboard.html'">← Back</button>
+    <button class="btn btn-primary" onclick="downloadPDF()">⬇ Download PDF</button>
+  </div>
+</header>
+
+<!-- Loading State -->
+<div id="loading">
+  <div class="spinner"></div>
+  <p style="color: var(--muted); font-size: 0.9rem;">Analyzing your hair...</p>
+</div>
+
+<!-- Report -->
+<div id="report">
+  <div class="container">
+
+    <!-- IMAGE SECTION -->
+    <div class="image-section fade-in" id="imageSection">
+      <img id="uploadedImage" class="uploaded-image" src="" alt="Uploaded hair image">
+      <div class="image-overlay">
+        <div id="hairBadge" class="hair-type-badge"></div>
+        <h2 id="hairTitle"></h2>
+        <div class="confidence-bar-wrap">
+          <div class="confidence-bar">
+            <div id="confidenceFill" class="confidence-fill" style="width:0%"></div>
+          </div>
+          <span id="confidenceText" class="confidence-text"></span>
+        </div>
+      </div>
+    </div>
+
+    <!-- OVERVIEW -->
+    <div class="section fade-in">
+      <div class="section-header">
+        <div class="section-icon icon-overview">📊</div>
+        <div>
+          <div class="section-title">Overview</div>
+          <div class="section-subtitle">Summary of your hair condition</div>
+        </div>
+      </div>
+      <div class="severity-wrap">
+        <div class="severity-label">
+          <span>Damage Level</span>
+          <span id="severityLabel">—</span>
+        </div>
+        <div class="severity-bar">
+          <div id="severityFill" class="severity-fill" style="width:0%"></div>
+        </div>
+      </div>
+      <div class="overview-grid" id="overviewGrid"></div>
+    </div>
+
+    <!-- CAUSES -->
+    <div class="section fade-in">
+      <div class="section-header">
+        <div class="section-icon icon-causes">🔍</div>
+        <div>
+          <div class="section-title">What's Causing This?</div>
+          <div class="section-subtitle">Common reasons for your hair condition</div>
+        </div>
+      </div>
+      <div class="info-list" id="causesList"></div>
+    </div>
+
+    <!-- CARE TIPS -->
+    <div class="section fade-in">
+      <div class="section-header">
+        <div class="section-icon icon-tips">💡</div>
+        <div>
+          <div class="section-title">Hair Care Tips</div>
+          <div class="section-subtitle">What you should do to maintain and improve your hair</div>
+        </div>
+      </div>
+      <div class="info-list" id="tipsList"></div>
+    </div>
+
+    <!-- RECOMMENDED PRODUCTS -->
+    <div class="section fade-in">
+      <div class="section-header">
+        <div class="section-icon icon-products">🛍️</div>
+        <div>
+          <div class="section-title">Recommended Products</div>
+          <div class="section-subtitle">Products suited for your hair type</div>
+        </div>
+      </div>
+      <div class="products-grid" id="productsList"></div>
+    </div>
+
+    <!-- PRECAUTIONS -->
+    <div class="section fade-in">
+      <div class="section-header">
+        <div class="section-icon icon-precautions">⚠️</div>
+        <div>
+          <div class="section-title">Precautions</div>
+          <div class="section-subtitle">Things to avoid for better hair health</div>
+        </div>
+      </div>
+      <div class="info-list" id="precautionsList"></div>
+    </div>
+
+    <!-- DAILY ROUTINE -->
+    <div class="section fade-in">
+      <div class="section-header">
+        <div class="section-icon icon-routine">📅</div>
+        <div>
+          <div class="section-title">Recommended Daily Routine</div>
+          <div class="section-subtitle">Follow this routine for best results</div>
+        </div>
+      </div>
+      <table class="routine-table">
+        <thead>
+          <tr>
+            <th>Time</th>
+            <th>Activity</th>
+            <th>Duration</th>
+          </tr>
+        </thead>
+        <tbody id="routineBody"></tbody>
+      </table>
+    </div>
+
+    <!-- PDF BUTTON -->
+    <div class="pdf-section">
+      <button class="pdf-btn" onclick="downloadPDF()">
+        📄 Download Full Report as PDF
+      </button>
+      <p style="color: var(--muted); font-size: 0.8rem; margin-top: 12px;">Save your personalized hair analysis report</p>
+    </div>
+
+  </div>
+</div>
+
+<script>
+// ===== HAIR DATA — ALL 11 CLASSES =====
+const hairData = {
+
+  // ──────────────────────────────────────────
+  straight: {
+    title: "Straight Hair",
+    color: "#60b8f5",
+    severity: 10,
+    severityLabel: "Excellent",
+    overview: [
+      { label: "Type", value: "Straight" },
+      { label: "Oil Tendency", value: "High" },
+      { label: "Urgency", value: "None" }
+    ],
+    causes: [
+      "Natural hair follicle shape — round follicles produce straight hair",
+      "Hair lies flat, allowing scalp oils to travel down the shaft quickly",
+      "Tends to look greasy faster than other types",
+      "Generally strong and easy to manage with minimal frizz"
+    ],
+    tips: [
+      "Wash every 2 days or use dry shampoo between washes to manage oil",
+      "Use a volumizing shampoo to prevent the hair from looking flat",
+      "Apply conditioner only from mid-length to ends, not the scalp",
+      "Add texture with a light sea salt spray for volume and movement",
+      "Trim every 8-10 weeks to keep ends crisp and healthy"
+    ],
+    products: [
+      { type: "Shampoo", name: "Volumizing Clarifying Shampoo", desc: "Removes buildup and adds lift at roots" },
+      { type: "Conditioner", name: "Lightweight Hydrating Conditioner", desc: "Moisturizes ends without weighing hair down" },
+      { type: "Spray", name: "Sea Salt Texturizing Spray", desc: "Adds body and effortless texture" },
+      { type: "Dry Shampoo", name: "Oil Control Dry Shampoo", desc: "Extends freshness between washes" },
+      { type: "Serum", name: "Shine-Enhancing Serum", desc: "Amplifies natural shine of straight hair" },
+      { type: "Treatment", name: "Protein Strengthening Mask", desc: "Maintains strength and smoothness" }
+    ],
+    precautions: [
+      "Avoid heavy oils or creams near the scalp — they cause greasiness",
+      "Don't over-wash — strips natural oils and signals more oil production",
+      "Avoid thick conditioners at roots which flatten and weigh down hair",
+      "Minimize heat styling to prevent split ends",
+      "Don't use heavy serums meant for thick or curly hair"
+    ],
+    routine: [
+      { time: "Morning", activity: "Apply volumizing mousse to damp roots", duration: "2 min" },
+      { time: "Morning", activity: "Blow dry with round brush for volume", duration: "5 min" },
+      { time: "Day 2", activity: "Dry shampoo at roots to absorb oil", duration: "1 min" },
+      { time: "Weekly", activity: "Clarifying shampoo wash to remove buildup", duration: "10 min" },
+      { time: "Monthly", activity: "Protein treatment mask", duration: "20 min" }
+    ]
+  },
+
+  // ──────────────────────────────────────────
+  wavy: {
+    title: "Wavy Hair",
+    color: "#5ec4b0",
+    severity: 15,
+    severityLabel: "Excellent",
+    overview: [
+      { label: "Type", value: "Wavy" },
+      { label: "Pattern", value: "S-Wave" },
+      { label: "Urgency", value: "None" }
+    ],
+    causes: [
+      "Oval-shaped hair follicles produce the characteristic S-wave pattern",
+      "Hair is neither fully straight nor curly — sits in between",
+      "Prone to frizz in humid conditions but easy to style",
+      "Naturally beautiful texture that holds styles well"
+    ],
+    tips: [
+      "Use the 'squish to condish' technique — scrunch conditioner into hair in the shower",
+      "Apply a curl-enhancing cream while hair is soaking wet for defined waves",
+      "Diffuse dry on low heat to enhance wave pattern without frizz",
+      "Avoid brushing dry — scrunch to refresh waves with a little water",
+      "Plop your hair in a microfiber towel after washing to define waves"
+    ],
+    products: [
+      { type: "Shampoo", name: "Sulfate-Free Wave Shampoo", desc: "Cleans gently without disrupting wave pattern" },
+      { type: "Conditioner", name: "Curl & Wave Conditioner", desc: "Defines and hydrates the natural wave" },
+      { type: "Cream", name: "Wave Enhancing Styling Cream", desc: "Locks in the natural S-wave pattern" },
+      { type: "Gel", name: "Lightweight Curl Gel", desc: "Holds waves without crunchiness" },
+      { type: "Spray", name: "Refreshing Wave Spray", desc: "Revives second-day waves with water and glycerin" },
+      { type: "Towel", name: "Microfiber Hair Towel", desc: "Prevents frizz while drying waves" }
+    ],
+    precautions: [
+      "Never brush dry wavy hair — destroys the wave pattern",
+      "Avoid heavy creams or butters that weigh waves down",
+      "Don't use heat without a heat protectant",
+      "Avoid sulfate shampoos that strip moisture and cause frizz",
+      "Don't sleep on cotton pillowcases — creates friction and frizz"
+    ],
+    routine: [
+      { time: "Wash Day", activity: "Co-wash or sulfate-free shampoo + conditioner", duration: "15 min" },
+      { time: "Wash Day", activity: "Apply wave cream while soaking wet, diffuse dry", duration: "10 min" },
+      { time: "Day 2", activity: "Dampen and scrunch with refreshing spray", duration: "3 min" },
+      { time: "Night", activity: "Pineapple updo (loose top knot) to protect waves", duration: "1 min" },
+      { time: "Weekly", activity: "Deep conditioning mask", duration: "20 min" }
+    ]
+  },
+
+  // ──────────────────────────────────────────
+  bald: {
+    title: "Bald / Thinning Scalp",
+    color: "#aaaaaa",
+    severity: 70,
+    severityLabel: "Significant",
+    overview: [
+      { label: "Condition", value: "Bald / MPB" },
+      { label: "Coverage", value: "Minimal" },
+      { label: "Urgency", value: "Moderate" }
+    ],
+    causes: [
+      "Androgenetic alopecia (male/female pattern baldness) — most common cause",
+      "Hormonal changes — DHT binds to hair follicles and shrinks them over time",
+      "Genetic predisposition — family history is the strongest indicator",
+      "Age-related follicle miniaturization reduces hair density",
+      "Chronic stress or illness can accelerate natural hair thinning"
+    ],
+    tips: [
+      "Consult a dermatologist early — treatments like minoxidil work best in early stages",
+      "Keep scalp moisturized and protected from UV with SPF scalp spray",
+      "Use a soft-bristle brush to gently exfoliate the scalp and stimulate circulation",
+      "Maintain a healthy diet rich in zinc, iron, and biotin",
+      "Consider scalp massage with rosemary oil — studies show promising results for follicle stimulation"
+    ],
+    products: [
+      { type: "Treatment", name: "Minoxidil 5% Scalp Foam", desc: "Clinically proven to slow hair loss and regrow hair" },
+      { type: "Shampoo", name: "DHT-Blocking Shampoo", desc: "Contains ketoconazole to block follicle-damaging hormones" },
+      { type: "Serum", name: "Rosemary Scalp Growth Serum", desc: "Natural follicle stimulation — research-backed" },
+      { type: "SPF", name: "Scalp UV Protection Spray", desc: "Protects exposed scalp from sun damage" },
+      { type: "Supplement", name: "Finasteride (Prescription)", desc: "Consult a doctor — blocks DHT at the source" },
+      { type: "Supplement", name: "Saw Palmetto + Biotin", desc: "Natural DHT reduction and hair strength support" }
+    ],
+    precautions: [
+      "Do not ignore early signs — early treatment gives much better results",
+      "Avoid harsh chemical treatments on a thinning scalp",
+      "Do not use heavy styling products on the scalp",
+      "Protect scalp from sunburn — bald skin burns quickly",
+      "Avoid extremely tight hats that restrict blood flow to follicles"
+    ],
+    routine: [
+      { time: "Morning", activity: "Apply minoxidil to scalp (if prescribed)", duration: "3 min" },
+      { time: "Morning", activity: "Apply SPF spray to exposed scalp", duration: "1 min" },
+      { time: "Evening", activity: "Scalp massage with rosemary oil", duration: "5 min" },
+      { time: "Evening", activity: "Second minoxidil application (if prescribed)", duration: "3 min" },
+      { time: "Weekly", activity: "Gentle scalp exfoliation with soft brush", duration: "5 min" }
+    ]
+  },
+
+  // ──────────────────────────────────────────
+  curly: {
+    title: "Curly Hair",
+    color: "#f0a060",
+    severity: 20,
+    severityLabel: "Low",
+    overview: [
+      { label: "Type", value: "Curly (3A–3C)" },
+      { label: "Moisture Need", value: "High" },
+      { label: "Urgency", value: "Low" }
+    ],
+    causes: [
+      "Elliptical hair follicles create the spiral curl pattern",
+      "Curly hair is naturally drier — oils from scalp struggle to travel down curls",
+      "Prone to frizz, tangles, and shrinkage due to the curl pattern",
+      "Requires more moisture and gentle handling than straight hair"
+    ],
+    tips: [
+      "Follow the Curly Girl Method — avoid sulfates, silicones, and heat",
+      "Deep condition every week to restore moisture balance",
+      "Apply stylers (gel or cream) to soaking-wet hair for defined curls",
+      "Use the 'finger coiling' or 'rake and shake' technique to define curls",
+      "Refresh curls daily with a spray bottle of water + leave-in conditioner mix"
+    ],
+    products: [
+      { type: "Co-Wash", name: "Cleansing Conditioner (Co-Wash)", desc: "Cleans without stripping moisture from curls" },
+      { type: "Conditioner", name: "Rich Curl Conditioner", desc: "Deep moisture for thirsty curls" },
+      { type: "Leave-In", name: "Leave-In Curl Cream", desc: "Base layer that defines and hydrates" },
+      { type: "Gel", name: "Strong Hold Curl Gel", desc: "Seals the curl pattern and fights frizz" },
+      { type: "Mask", name: "Protein-Moisture Balance Mask", desc: "Weekly treatment for curl strength and hydration" },
+      { type: "Oil", name: "Jojoba or Sweet Almond Oil", desc: "Seals moisture into curls as final step" }
+    ],
+    precautions: [
+      "Never brush dry curly hair — causes massive frizz and breakage",
+      "Avoid sulfate shampoos — strip the moisture curls need",
+      "Don't use heat without a heat protectant spray",
+      "Avoid silicone-based products that build up and block moisture",
+      "Never sleep on cotton pillowcases — always use satin or silk"
+    ],
+    routine: [
+      { time: "Wash Day", activity: "Co-wash + rich conditioner, detangle with fingers", duration: "20 min" },
+      { time: "Wash Day", activity: "Apply leave-in + gel on soaking wet hair, diffuse", duration: "15 min" },
+      { time: "Daily", activity: "Refresh curls with water + leave-in spray", duration: "3 min" },
+      { time: "Night", activity: "Pineapple hair or silk bonnet to protect curls", duration: "2 min" },
+      { time: "Weekly", activity: "Deep conditioning protein-moisture mask", duration: "30 min" }
+    ]
+  },
+
+  // ──────────────────────────────────────────
+  dreadlocks: {
+    title: "Dreadlocks Detected",
+    color: "#c8a96e",
+    severity: 25,
+    severityLabel: "Low",
+    overview: [
+      { label: "Style", value: "Dreadlocks" },
+      { label: "Care Level", value: "Moderate" },
+      { label: "Urgency", value: "Maintenance" }
+    ],
+    causes: [
+      "Intentional locking of hair through twisting, backcombing, or neglect",
+      "Hair naturally mats when left unmanipulated over time",
+      "Locs require regular maintenance to stay clean and well-formed",
+      "Scalp health is critical — buildup inside locs can cause damage"
+    ],
+    tips: [
+      "Wash locs every 1-2 weeks with a residue-free shampoo",
+      "Always dry locs completely after washing — moisture inside locs causes mildew",
+      "Use a light spray oil (jojoba or coconut) to keep locs moisturized",
+      "Re-twist new growth every 4-6 weeks with a loc gel or butter",
+      "Palm roll individual locs after washing to maintain shape"
+    ],
+    products: [
+      { type: "Shampoo", name: "Residue-Free Loc Shampoo", desc: "Cleans deeply without leaving buildup in locs" },
+      { type: "Oil", name: "Jojoba Scalp & Loc Oil", desc: "Lightweight oil that doesn't cause buildup" },
+      { type: "Gel", name: "Loc Retwisting Gel", desc: "Holds new growth and re-twists cleanly" },
+      { type: "Spray", name: "Loc Refreshing Mist", desc: "Daily moisture without buildup" },
+      { type: "Treatment", name: "Apple Cider Vinegar Rinse", desc: "Monthly detox rinse to remove buildup from locs" },
+      { type: "Supplement", name: "Biotin + Scalp Health Vitamins", desc: "Supports healthy hair growth at the root" }
+    ],
+    precautions: [
+      "Never let locs stay wet for long — always dry completely to avoid mildew",
+      "Avoid products with heavy waxes or butters that build up inside locs",
+      "Do not re-twist too tightly — causes traction alopecia at the hairline",
+      "Avoid swimming in pools without a protective cap",
+      "Do not ignore scalp flaking or itching — treat early"
+    ],
+    routine: [
+      { time: "Morning", activity: "Spray locs with loc mist for moisture", duration: "2 min" },
+      { time: "Morning", activity: "Apply light oil to scalp", duration: "2 min" },
+      { time: "Weekly", activity: "Wash with residue-free shampoo + dry completely", duration: "45 min" },
+      { time: "Monthly", activity: "Re-twist new growth with loc gel", duration: "1-2 hrs" },
+      { time: "Monthly", activity: "Apple cider vinegar clarifying rinse", duration: "20 min" }
+    ]
+  },
+
+  // ──────────────────────────────────────────
+  dry: {
+    title: "Dry Hair Detected",
+    color: "#e8834a",
+    severity: 60,
+    severityLabel: "Moderate",
+    overview: [
+      { label: "Condition", value: "Dry Hair" },
+      { label: "Moisture Level", value: "Low" },
+      { label: "Urgency", value: "Moderate" }
+    ],
+    causes: [
+      "Overwashing with harsh sulfate shampoos strips natural oils from the scalp",
+      "Excessive heat styling — blow dryers, straighteners, and curling irons damage the cuticle",
+      "Environmental factors — UV exposure, wind, dry climates, and hard water",
+      "Nutritional deficiency — lack of omega-3 fatty acids, vitamins A and E",
+      "Chemical treatments — coloring, bleaching, perming deplete moisture"
+    ],
+    tips: [
+      "Deep condition with a hydrating mask at least once a week",
+      "Use lukewarm water instead of hot water when washing hair",
+      "Apply a leave-in conditioner immediately after every wash",
+      "Let hair air dry whenever possible instead of using heat",
+      "Massage scalp with warm coconut or argan oil before every wash as a pre-poo treatment"
+    ],
+    products: [
+      { type: "Shampoo", name: "Sulfate-Free Moisturizing Shampoo", desc: "Gentle cleanse that preserves natural oils" },
+      { type: "Conditioner", name: "Deep Hydration Conditioner", desc: "Intense moisture for dry, brittle strands" },
+      { type: "Mask", name: "Keratin & Argan Oil Hair Mask", desc: "Weekly treatment to restore moisture balance" },
+      { type: "Leave-In", name: "Hydrating Leave-In Serum", desc: "Locks moisture in throughout the day" },
+      { type: "Oil", name: "Argan or Coconut Oil", desc: "Pre-wash oil treatment for deep nourishment" },
+      { type: "Supplement", name: "Biotin + Omega-3 Capsules", desc: "Internal support for hair moisture levels" }
+    ],
+    precautions: [
+      "Avoid washing hair more than 2-3 times per week",
+      "Never use heat tools above 180°C without a heat protectant spray",
+      "Avoid alcohol-based hair products — they dry out hair further",
+      "Do not brush wet hair — use a wide-tooth comb instead",
+      "Avoid tight hairstyles that cause breakage on already fragile hair"
+    ],
+    routine: [
+      { time: "Morning", activity: "Apply leave-in conditioner to damp hair", duration: "2 min" },
+      { time: "Morning", activity: "Style with minimal heat (180°C max)", duration: "5 min" },
+      { time: "Evening", activity: "Scalp massage with argan or coconut oil", duration: "5 min" },
+      { time: "Weekly", activity: "Deep conditioning mask with heat cap", duration: "20 min" },
+      { time: "8 Weeks", activity: "Trim to remove dry, split ends", duration: "30 min" }
+    ]
+  },
+
+  // ──────────────────────────────────────────
+  frizzy: {
+    title: "Frizzy Hair Detected",
+    color: "#7c6fcd",
+    severity: 50,
+    severityLabel: "Mild to Moderate",
+    overview: [
+      { label: "Condition", value: "Frizzy" },
+      { label: "Humidity Response", value: "High" },
+      { label: "Urgency", value: "Low" }
+    ],
+    causes: [
+      "High humidity causes hair cuticles to swell and absorb moisture from air",
+      "Damaged or raised cuticles that cannot seal properly against the environment",
+      "Lack of internal moisture causing hair to seek hydration from surrounding air",
+      "Rough towel drying and brushing that roughens the hair cuticle layer"
+    ],
+    tips: [
+      "Apply anti-frizz serum or cream to damp hair before styling — never dry hair",
+      "Use a microfiber towel or cotton t-shirt to blot dry, never rub",
+      "Never brush dry hair — only detangle when wet with conditioner",
+      "Sleep on a silk or satin pillowcase to reduce overnight friction",
+      "Use a diffuser on low heat to dry hair without disrupting the cuticle"
+    ],
+    products: [
+      { type: "Shampoo", name: "Smoothing Frizz Control Shampoo", desc: "Seals the cuticle and reduces puffiness" },
+      { type: "Conditioner", name: "Anti-Frizz Conditioner", desc: "Smooths and seals the hair shaft" },
+      { type: "Serum", name: "Anti-Humidity Serum", desc: "Protective layer against humidity throughout the day" },
+      { type: "Cream", name: "Curl Defining Smoothing Cream", desc: "Controls texture without crunchy buildup" },
+      { type: "Treatment", name: "Keratin Smoothing Treatment", desc: "Professional smoothing for long-term frizz control" },
+      { type: "Tool", name: "Ionic Hair Dryer", desc: "Reduces static and seals cuticle while drying" }
+    ],
+    precautions: [
+      "Never rub hair vigorously with a regular towel — always pat gently",
+      "Avoid products with drying alcohols — they worsen frizz",
+      "Do not over-brush dry hair — increases static and frizz",
+      "Avoid going out in humid weather with wet hair",
+      "Never skip conditioner after shampooing — it's essential for frizz control"
+    ],
+    routine: [
+      { time: "Wash Day", activity: "Shampoo + conditioner, rinse with cool water", duration: "12 min" },
+      { time: "Wash Day", activity: "Apply anti-frizz serum to damp hair, diffuse dry", duration: "10 min" },
+      { time: "Night", activity: "Sleep on silk pillowcase or use satin bonnet", duration: "1 min" },
+      { time: "Weekly", activity: "Deep smoothing mask", duration: "15 min" },
+      { time: "Monthly", activity: "Keratin or smoothing treatment (optional)", duration: "1-2 hrs" }
+    ]
+  },
+
+  // ──────────────────────────────────────────
+  hairfall: {
+    title: "Hair Fall Detected",
+    color: "#e85a5a",
+    severity: 80,
+    severityLabel: "Significant — Act Now",
+    overview: [
+      { label: "Condition", value: "Hair Fall" },
+      { label: "Severity", value: "High" },
+      { label: "Urgency", value: "High" }
+    ],
+    causes: [
+      "Nutritional deficiency — low iron, zinc, biotin, and vitamin D weaken follicles",
+      "High stress levels trigger hormonal changes (telogen effluvium) causing increased shedding",
+      "Tight hairstyles such as ponytails or braids cause traction alopecia over time",
+      "Scalp conditions — dandruff, seborrheic dermatitis, or fungal infections weaken roots",
+      "Hormonal imbalances including thyroid disorders and post-pregnancy changes"
+    ],
+    tips: [
+      "Massage your scalp gently for 5 minutes daily to stimulate blood circulation to follicles",
+      "Eat a protein-rich diet — eggs, lentils, fish, nuts, and leafy greens support hair growth",
+      "Take a hair supplement with biotin, zinc, and vitamin D after consulting a doctor",
+      "Switch to a gentle, sulfate-free shampoo formulated for hair fall",
+      "Avoid hairstyles that pull tightly at the roots"
+    ],
+    products: [
+      { type: "Shampoo", name: "Anti Hair Fall Shampoo", desc: "Strengthens roots and reduces daily breakage" },
+      { type: "Serum", name: "Minoxidil 2% Scalp Serum", desc: "Clinically proven to reduce hair fall and regrow hair" },
+      { type: "Oil", name: "Rosemary + Castor Oil Blend", desc: "Stimulates follicles and reduces shedding naturally" },
+      { type: "Supplement", name: "Biotin + Iron + Zinc Tablets", desc: "Essential nutrients for hair growth and strength" },
+      { type: "Conditioner", name: "Strengthening Protein Conditioner", desc: "Repairs weak, brittle strands prone to breakage" },
+      { type: "Mask", name: "Onion & Bhringraj Hair Mask", desc: "Traditional remedy with proven follicle-stimulating properties" }
+    ],
+    precautions: [
+      "Avoid hot oil treatments if scalp is inflamed or irritated",
+      "Never comb wet hair aggressively — hair is most fragile when wet",
+      "Avoid chemical treatments until hair fall reduces significantly",
+      "Do not ignore persistent hair fall — consult a dermatologist",
+      "Reduce stress levels — it is one of the most overlooked causes of hair fall"
+    ],
+    routine: [
+      { time: "Morning", activity: "Scalp massage with rosemary oil blend", duration: "5 min" },
+      { time: "Morning", activity: "Take hair supplement with breakfast", duration: "1 min" },
+      { time: "Evening", activity: "Apply scalp serum to affected areas", duration: "3 min" },
+      { time: "Weekly", activity: "Onion or bhringraj hair mask", duration: "30 min" },
+      { time: "Monthly", activity: "Dermatologist visit if no improvement", duration: "—" }
+    ]
+  },
+
+  // ──────────────────────────────────────────
+  healthy: {
+    title: "Healthy Hair!",
+    color: "#4acea8",
+    severity: 10,
+    severityLabel: "Excellent",
+    overview: [
+      { label: "Condition", value: "Healthy" },
+      { label: "Strength", value: "Good" },
+      { label: "Urgency", value: "None" }
+    ],
+    causes: [
+      "Your hair is in great condition — your current routine is working!",
+      "Good nutrition and hydration are reflecting in your hair health",
+      "Proper hair care habits are maintaining shine and strength",
+      "Minimal chemical or heat damage detected"
+    ],
+    tips: [
+      "Trim every 6-8 weeks to prevent split ends before they develop",
+      "Continue your current hair care routine — it is clearly working well",
+      "Protect hair from UV exposure with a UV protection spray or hat outdoors",
+      "Stay hydrated — drink at least 8 glasses of water daily for hair health",
+      "Add a weekly hydrating mask as a preventive care step"
+    ],
+    products: [
+      { type: "Shampoo", name: "Balancing Maintenance Shampoo", desc: "Keeps healthy hair clean and fresh" },
+      { type: "Conditioner", name: "Lightweight Daily Conditioner", desc: "Adds shine without weighing hair down" },
+      { type: "Spray", name: "UV Protection Hair Spray", desc: "Guards against sun damage during outdoor activities" },
+      { type: "Oil", name: "Light Finishing Hair Oil", desc: "Adds gloss and controls flyaways" },
+      { type: "Mask", name: "Weekly Maintenance Hair Mask", desc: "Preventive care for lasting health" },
+      { type: "Supplement", name: "Multivitamin for Hair", desc: "Supports continued hair health from within" }
+    ],
+    precautions: [
+      "Do not over-wash — stick to 2-3 times per week to preserve oils",
+      "Avoid excessive heat styling to maintain current healthy state",
+      "Do not skip conditioner — even healthy hair needs regular moisture",
+      "Avoid harsh chemical treatments unnecessarily",
+      "Monitor any changes in hair texture or shedding patterns"
+    ],
+    routine: [
+      { time: "Morning", activity: "Light leave-in conditioner or UV spray", duration: "2 min" },
+      { time: "Morning", activity: "Minimal heat styling if needed", duration: "5 min" },
+      { time: "Evening", activity: "Gentle brush to distribute natural oils", duration: "2 min" },
+      { time: "Weekly", activity: "Hydrating hair mask (preventive)", duration: "15 min" },
+      { time: "6-8 Weeks", activity: "Trim to prevent split ends", duration: "30 min" }
+    ]
+  },
+
+  // ──────────────────────────────────────────
+  kinky: {
+    title: "Kinky / Coily Hair",
+    color: "#d97cd4",
+    severity: 30,
+    severityLabel: "Low — Needs Moisture",
+    overview: [
+      { label: "Type", value: "Kinky (4A–4C)" },
+      { label: "Moisture Need", value: "Very High" },
+      { label: "Urgency", value: "Low" }
+    ],
+    causes: [
+      "Tightly coiled follicle shape produces the zig-zag or Z-shaped strand pattern",
+      "Kinky hair is the most fragile hair type — the bends are breakage points",
+      "Natural oils struggle to travel down the tight coils, causing dryness",
+      "High shrinkage (50–75%) is normal — hair is much longer when stretched"
+    ],
+    tips: [
+      "Moisturize daily using the LOC or LCO method (Liquid → Oil → Cream)",
+      "Protective styles like twists, braids, and buns protect fragile ends",
+      "Only detangle with fingers or a wide-tooth comb — never a fine-tooth comb",
+      "Wash in sections (4-6 twists) to prevent tangles and knots",
+      "Deep condition every single wash day — kinky hair cannot be over-conditioned"
+    ],
+    products: [
+      { type: "Shampoo", name: "Moisturizing Co-Wash or Low-Poo", desc: "Cleanses without stripping coily hair's moisture" },
+      { type: "Conditioner", name: "Ultra-Rich Deep Conditioner", desc: "Maximum moisture penetration for 4C hair" },
+      { type: "Leave-In", name: "Water-Based Leave-In Conditioner", desc: "First step of LOC method — hydrates and primes" },
+      { type: "Oil", name: "Castor or Avocado Oil", desc: "Heavy oil that seals moisture into coils" },
+      { type: "Cream", name: "Thick Shea Butter Styling Cream", desc: "Final LOC step — locks in all moisture" },
+      { type: "Treatment", name: "Protein Strengthening Treatment", desc: "Monthly treatment to reduce breakage at bends" }
+    ],
+    precautions: [
+      "Never detangle dry kinky hair — always detangle with conditioner on wet hair",
+      "Avoid fine-tooth combs completely — they cause massive breakage",
+      "Never skip deep conditioning on wash day",
+      "Avoid products with mineral oil or petrolatum — they block moisture",
+      "Do not wear very tight protective styles for extended periods"
+    ],
+    routine: [
+      { time: "Daily", activity: "LOC method: spritz water, oil, then seal with cream", duration: "5 min" },
+      { time: "Wash Day", activity: "Section, co-wash, deep condition under heat cap", duration: "45 min" },
+      { time: "Wash Day", activity: "Detangle in sections, style into protective look", duration: "30 min" },
+      { time: "Night", activity: "Satin bonnet or silk pillowcase", duration: "1 min" },
+      { time: "Monthly", activity: "Protein strengthening treatment", duration: "20 min" }
+    ]
+  },
+
+  // ──────────────────────────────────────────
+  notbald: {
+    title: "Hair Present — Healthy Density",
+    color: "#6fcf6f",
+    severity: 10,
+    severityLabel: "Excellent",
+    overview: [
+      { label: "Coverage", value: "Full" },
+      { label: "Density", value: "Normal" },
+      { label: "Urgency", value: "None" }
+    ],
+    causes: [
+      "Full hair coverage detected — no signs of significant thinning or baldness",
+      "Hair follicles appear active and producing healthy hair",
+      "Your current lifestyle and hair care routine is supporting good density",
+      "Maintaining this coverage requires consistent care and a healthy diet"
+    ],
+    tips: [
+      "Keep up your current routine — you are maintaining good hair density",
+      "Eat a balanced diet rich in protein, iron, and vitamin D to sustain density",
+      "Avoid tight hairstyles that put stress on the hairline over time",
+      "Do a monthly scalp check — catching early thinning is key to prevention",
+      "Manage stress with regular exercise, sleep, and mindfulness"
+    ],
+    products: [
+      { type: "Shampoo", name: "Density-Maintaining Shampoo", desc: "Supports scalp health and hair fullness" },
+      { type: "Conditioner", name: "Volumizing Conditioner", desc: "Adds body without weighing hair down" },
+      { type: "Serum", name: "Preventive Scalp Tonic", desc: "Keeps follicles healthy and active" },
+      { type: "Supplement", name: "Hair, Skin & Nails Multivitamin", desc: "Full-spectrum nutrient support" },
+      { type: "Oil", name: "Rosemary Scalp Oil", desc: "Stimulating scalp oil to maintain blood flow to follicles" },
+      { type: "Mask", name: "Weekly Scalp Mask", desc: "Exfoliates scalp and supports follicle health" }
+    ],
+    precautions: [
+      "Do not take your hair density for granted — maintain your routine",
+      "Avoid crash diets that cause sudden nutritional deficiencies",
+      "Avoid smoking — it restricts blood flow to hair follicles",
+      "Do not ignore early signs of thinning at the temples or crown",
+      "Limit chemical treatments that can weaken hair over time"
+    ],
+    routine: [
+      { time: "Morning", activity: "Scalp massage for 2 minutes to boost circulation", duration: "2 min" },
+      { time: "Morning", activity: "Take daily hair multivitamin with breakfast", duration: "1 min" },
+      { time: "Wash Day", activity: "Gentle shampoo + volumizing conditioner", duration: "10 min" },
+      { time: "Weekly", activity: "Rosemary oil scalp treatment", duration: "10 min" },
+      { time: "Monthly", activity: "Self scalp check for any thinning changes", duration: "5 min" }
+    ]
+  }
+
+};
+
+// ===== NORMALIZE HAIR TYPE KEY =====
+// Handles backend returning 'Straight', 'Wavy' (capitalized) or 'healthy', 'dry' (lowercase)
+function normalizeKey(raw) {
+  if (!raw) return "healthy";
+  return raw.toLowerCase().trim();
+}
+
+// ===== INIT =====
+window.onload = () => {
+  const rawType    = sessionStorage.getItem("hairType") || "healthy";
+  const confidence = sessionStorage.getItem("hairConfidence") || "85";
+  const imageUrl   = sessionStorage.getItem("hairImage");
+
+  if (imageUrl) {
+    document.getElementById("uploadedImage").src = imageUrl;
+  } else {
+    document.getElementById("imageSection").style.display = "none";
+  }
+
+  setTimeout(() => buildReport(normalizeKey(rawType), confidence), 800);
+};
+
+function buildReport(hairType, confidence) {
+  const data = hairData[hairType] || hairData.healthy;
+  const color = data.color;
+
+  // Badge & Title
+  const badge = document.getElementById("hairBadge");
+  badge.textContent = `● ${hairType.toUpperCase()}`;
+  badge.style.color = color;
+  badge.style.background = color + "22";
+  badge.style.borderColor = color;
+
+  document.getElementById("hairTitle").textContent = data.title;
+
+  // Confidence bar
+  const fill = document.getElementById("confidenceFill");
+  fill.style.background = color;
+  document.getElementById("confidenceText").textContent = `${confidence}% confidence`;
+  setTimeout(() => { fill.style.width = `${Math.min(confidence, 100)}%`; }, 100);
+
+  // Severity
+  document.getElementById("severityLabel").textContent = data.severityLabel;
+  setTimeout(() => {
+    document.getElementById("severityFill").style.width = `${data.severity}%`;
+  }, 300);
+
+  // Overview
+  document.getElementById("overviewGrid").innerHTML = data.overview.map(item => `
+    <div class="overview-item">
+      <div class="overview-label">${item.label}</div>
+      <div class="overview-value">${item.value}</div>
+    </div>
+  `).join("");
+
+  // Causes
+  document.getElementById("causesList").innerHTML = data.causes.map(c => `
+    <div class="info-item">
+      <div class="info-dot" style="background:${color}"></div>
+      <span>${c}</span>
+    </div>
+  `).join("");
+
+  // Tips
+  document.getElementById("tipsList").innerHTML = data.tips.map(t => `
+    <div class="info-item">
+      <div class="info-dot" style="background:#4acea8"></div>
+      <span>${t}</span>
+    </div>
+  `).join("");
+
+  // Products
+  document.getElementById("productsList").innerHTML = data.products.map(p => `
+    <div class="product-card">
+      <div class="product-type">${p.type}</div>
+      <div class="product-name">${p.name}</div>
+      <div class="product-desc">${p.desc}</div>
+    </div>
+  `).join("");
+
+  // Precautions
+  document.getElementById("precautionsList").innerHTML = data.precautions.map(p => `
+    <div class="info-item">
+      <div class="info-dot" style="background:#e8834a"></div>
+      <span>${p}</span>
+    </div>
+  `).join("");
+
+  // Routine
+  document.getElementById("routineBody").innerHTML = data.routine.map(r => `
+    <tr>
+      <td class="routine-time">${r.time}</td>
+      <td>${r.activity}</td>
+      <td style="color: var(--muted)">${r.duration}</td>
+    </tr>
+  `).join("");
+
+  // Show report
+  document.getElementById("loading").style.display = "none";
+  document.getElementById("report").style.display = "block";
+}
+
+// ===== PDF DOWNLOAD =====
+function downloadPDF() {
+  window.print();
+}
+</script>
+
+<style media="print">
+  body { background: white; color: black; }
+  header { position: static; background: white; border-bottom: 2px solid #ccc; }
+  .btn, .pdf-section { display: none; }
+  .section { border: 1px solid #ddd; break-inside: avoid; }
+  :root {
+    --bg: white; --card: #f9f9f9; --border: #ddd;
+    --text: #111; --muted: #666; --accent: #8a6a2e;
+  }
+</style>
+
+</body>
+</html>

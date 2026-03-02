@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Signup - Hairstyle AI</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0a0a0f;
+      --card: #13131a;
+      --border: #2a2a3a;
+      --accent: #c8a96e;
+      --accent2: #7c6fcd;
+      --text: #e8e8f0;
+      --muted: #888899;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      background: var(--bg);
+      min-height: 100vh;
+      display: flex;
+      font-family: 'DM Sans', sans-serif;
+      overflow: hidden;
+    }
+
+    /* Left Panel */
+    .left {
+      flex: 1;
+      background: linear-gradient(135deg, #0f0f18 0%, #1a1428 100%);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 60px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .left::before {
+      content: '';
+      position: absolute;
+      width: 400px; height: 400px;
+      background: radial-gradient(circle, rgba(200,169,110,0.1) 0%, transparent 70%);
+      bottom: -100px; left: -100px;
+    }
+
+    .left::after {
+      content: '';
+      position: absolute;
+      width: 300px; height: 300px;
+      background: radial-gradient(circle, rgba(124,111,205,0.08) 0%, transparent 70%);
+      top: -50px; right: -50px;
+    }
+
+    .left-content { position: relative; z-index: 1; }
+
+    .brand {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.4rem;
+      color: var(--accent);
+      letter-spacing: 1px;
+      margin-bottom: 60px;
+    }
+
+    .left h1 {
+      font-family: 'Playfair Display', serif;
+      font-size: 2.8rem;
+      color: var(--text);
+      line-height: 1.2;
+      margin-bottom: 20px;
+    }
+
+    .left h1 span { color: var(--accent); }
+
+    .left p {
+      color: var(--muted);
+      font-size: 1rem;
+      line-height: 1.6;
+      max-width: 380px;
+      margin-bottom: 40px;
+    }
+
+    .features { display: flex; flex-direction: column; gap: 16px; }
+
+    .feature {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      color: #ccccd8;
+      font-size: 0.9rem;
+    }
+
+    .feature-dot {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      background: var(--accent);
+      flex-shrink: 0;
+    }
+
+    /* Right Panel */
+    .right {
+      width: 500px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 40px;
+      background: var(--bg);
+      border-left: 1px solid var(--border);
+      overflow-y: auto;
+    }
+
+    .card { width: 100%; max-width: 420px; }
+
+    .card h2 {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.8rem;
+      color: var(--text);
+      margin-bottom: 6px;
+    }
+
+    .card > p {
+      color: var(--muted);
+      font-size: 0.88rem;
+      margin-bottom: 28px;
+    }
+
+    .input-group { margin-bottom: 16px; }
+
+    .input-group label {
+      display: block;
+      font-size: 0.78rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--muted);
+      margin-bottom: 8px;
+    }
+
+    .input-group input {
+      width: 100%;
+      padding: 13px 16px;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      color: var(--text);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.9rem;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    .input-group input:focus { border-color: var(--accent); }
+    .input-group input::placeholder { color: var(--muted); }
+
+    /* ===== PASSWORD STRENGTH METER ===== */
+    .strength-wrap {
+      margin-top: 8px;
+    }
+
+    .strength-bar-bg {
+      height: 4px;
+      background: rgba(255,255,255,0.08);
+      border-radius: 10px;
+      overflow: hidden;
+      margin-bottom: 6px;
+    }
+
+    #strengthMeter {
+      height: 100%;
+      width: 0%;
+      border-radius: 10px;
+      transition: all 0.3s ease;
+    }
+
+    .strength-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 4px;
+    }
+
+    #strengthLabel {
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: var(--muted);
+      transition: color 0.3s;
+    }
+
+    #passwordRules {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 4px 12px;
+      font-size: 0.75rem;
+      margin-top: 8px;
+      line-height: 1.6;
+    }
+
+    /* Button */
+    .btn-signup {
+      width: 100%;
+      padding: 14px;
+      background: var(--accent);
+      color: #0a0a0f;
+      border: none;
+      border-radius: 10px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.95rem;
+      font-weight: 700;
+      cursor: pointer;
+      margin-top: 12px;
+      transition: all 0.2s;
+    }
+
+    .btn-signup:hover {
+      background: #d4b87a;
+      transform: translateY(-1px);
+      box-shadow: 0 8px 25px rgba(200,169,110,0.25);
+    }
+
+    .switch {
+      text-align: center;
+      margin-top: 20px;
+      font-size: 0.85rem;
+      color: var(--muted);
+    }
+
+    .switch a {
+      color: var(--accent);
+      text-decoration: none;
+      font-weight: 500;
+    }
+
+    @media (max-width: 768px) {
+      body { flex-direction: column; overflow: auto; }
+      .left { padding: 40px 30px; min-height: 280px; }
+      .left h1 { font-size: 2rem; }
+      .right { width: 100%; border-left: none; border-top: 1px solid var(--border); }
+    }
+  </style>
+</head>
+<body>
+
+<!-- Left Panel -->
+<div class="left">
+  <div class="left-content">
+    <div class="brand">✦ Hairstyle AI</div>
+    <h1>Discover Your <span>Perfect</span> Hair</h1>
+    <p>AI-powered hair analysis and virtual try-on. Get personalized care tips based on your unique hair condition.</p>
+    <div class="features">
+      <div class="feature"><div class="feature-dot"></div>AI hair condition detection</div>
+      <div class="feature"><div class="feature-dot"></div>Virtual AR hairstyle try-on</div>
+      <div class="feature"><div class="feature-dot"></div>Personalized care recommendations</div>
+      <div class="feature"><div class="feature-dot"></div>Downloadable hair analysis report</div>
+    </div>
+  </div>
+</div>
+
+<!-- Right Panel -->
+<div class="right">
+  <div class="card">
+    <h2>Create Account</h2>
+    <p>Join thousands discovering better hair health</p>
+
+    <div class="input-group">
+      <label>Full Name</label>
+      <input type="text" id="name" placeholder="Your full name">
+    </div>
+
+    <div class="input-group">
+      <label>Email Address</label>
+      <input type="email" id="email" placeholder="you@example.com">
+    </div>
+
+    <div class="input-group">
+      <label>Password</label>
+      <input type="password" id="password" placeholder="Create a strong password">
+      <!-- Strength Meter -->
+      <div class="strength-wrap">
+        <div class="strength-top">
+          <span style="font-size:0.72rem; color:var(--muted);">Password strength</span>
+          <span id="strengthLabel"></span>
+        </div>
+        <div class="strength-bar-bg">
+          <div id="strengthMeter"></div>
+        </div>
+        <div id="passwordRules"></div>
+      </div>
+    </div>
+
+    <div class="input-group">
+      <label>Confirm Password</label>
+      <input type="password" id="confirmPassword" placeholder="Re-enter your password">
+    </div>
+
+    <button class="btn-signup" onclick="signup()">Create Account →</button>
+
+    <p class="switch">
+      Already have an account? <a href="login.html">Login</a>
+    </p>
+  </div>
+</div>
+
+<script src="../js/auth.js"></script>
+</body>
+</html>
